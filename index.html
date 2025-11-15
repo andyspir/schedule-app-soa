@@ -382,6 +382,7 @@ function applyMobileMode(initial = false){
 
     const activeKey = DAY_KEYS[activeMobileDayIndex];
 
+    // === показываем только активный день ===
     document.querySelectorAll('.day-column').forEach(col => {
         if (col.id === activeKey) {
             col.style.display = 'flex';
@@ -392,17 +393,24 @@ function applyMobileMode(initial = false){
         }
     });
 
+    // === очищаем ВСЕ подсветки у всех дней ===
     clearHighlight();
 
+    // === определяем что подсвечивать ТОЛЬКО в активном дне ===
     let ev;
+
     if (isTodayWeekend() && activeKey === 'mon') {
-        ev = getFirstEvent('mon');      // в выходные в мобильном тоже первый блок понедельника
+        // На выходных → всегда первый блок ПН
+        ev = getFirstEvent('mon');
     } else {
         ev = findCurrentEvent(activeKey);
+        if (!ev) ev = getFirstEvent(activeKey);
     }
 
+    // === подсвечиваем только один блок ===
     if (ev) highlight(ev);
 }
+
 
 // переключение дня в мобильном режиме
 function setMobileDay(index){
@@ -497,3 +505,4 @@ function showUpdateBanner(reg){
 
 </body>
 </html>
+

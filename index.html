@@ -22,180 +22,179 @@
     }
 }
 
-    html {
-        scroll-behavior: smooth;
-    }
-    body {
-        font-family: Arial, sans-serif;
-        background: #fafafa;
-        margin: 20px;
-    }
+html {
+    scroll-behavior: smooth;
+}
+body {
+    font-family: Arial, sans-serif;
+    background: #fafafa;
+    margin: 20px;
+}
 
+.week-container {
+    max-width: 1500px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+}
+
+.day-column {
+    border: 1px solid #333;
+    border-radius: 10px;
+    background: #ffffff;
+    padding: 10px 8px 12px 8px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+.day-title {
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.event {
+    display: grid;
+    grid-template-columns: 56px auto 60px; /* время | текст | длительность */
+    padding: 6px 6px;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    border: 1px solid #ccc;
+    line-height: 1.3;
+    align-items: center;
+    box-sizing: border-box;
+    transition: background 0.25s, box-shadow 0.25s, border 0.25s;
+    font-size: 12px;
+}
+.time {
+    font-size: 11px;
+    font-weight: bold;
+    color: #333;
+}
+.text {
+    font-size: 11px;
+    white-space: normal;
+    overflow-wrap: break-word;
+    padding-right: 4px;
+}
+.duration {
+    text-align: right;
+    font-size: 11px;
+    font-weight: bold;
+    color: #444;
+}
+
+/* Цветовое кодирование */
+.school     { background: #cce6ff; }
+.music      { background: #ffe6cc; }
+.homework   { background: #e6ffcc; }
+.uchiru     { background: #e6ccff; }
+.prep-music { background: #ffcccc; }
+.default    { background: #f2f2f2; }
+
+/* Подсветка текущего блока */
+.highlight {
+    border: 2px solid #ffae42 !important;
+    background-color: #fff8e6 !important;
+    box-shadow: 0 0 10px 3px rgba(255, 180, 80, 0.85) !important;
+}
+
+/* Кнопка "сейчас" для планшета (фиксированная) */
+#tabletNowBtn {
+    display: none;
+    position: fixed;
+    right: 12px;
+    top: 12px;
+    z-index: 1100;
+    border: 1px solid #ccc;
+    border-radius: 18px;
+    padding: 6px 14px;
+    font-size: 18px;
+    background: #ffffff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    cursor: pointer;
+}
+#tabletNowBtn:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* Вертикальная навигация дней для мобильного (справа) */
+.mobile-side-nav {
+    display: none;
+    position: fixed;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1200;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-end;
+}
+.mobile-side-nav button {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 4px 6px;
+    font-size: 11px;
+    background: #ffffff;
+    cursor: pointer;
+    min-width: 32px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+.mobile-side-nav button:active {
+    transform: translateY(1px);
+    box-shadow: 0 0 2px rgba(0,0,0,0.2);
+}
+.mobile-side-nav button.active-day-btn {
+    font-weight: bold;
+    border-color: #ffae42;
+}
+
+/* Адаптив: планшеты и телефоны */
+@media (max-width: 1199px) {
     .week-container {
-        max-width: 1500px;
-        margin: 0 auto;
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 8px;
+        grid-template-columns: repeat(3, 1fr);
     }
-
-    .day-column {
-        border: 1px solid #333;
-        border-radius: 10px;
-        background: #ffffff;
-        padding: 10px 8px 12px 8px;
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .day-title {
-        text-align: center;
-        font-size: 18px;
-        font-weight: bold;
-        margin-bottom: 8px;
-    }
-
-    .event {
-        display: grid;
-        grid-template-columns: 56px auto 60px; /* время | текст | длительность */
-        padding: 6px 6px;
-        border-radius: 8px;
-        margin-bottom: 4px;
-        border: 1px solid #ccc;
-        line-height: 1.3;
-        align-items: center;
-        box-sizing: border-box;
-        transition: background 0.25s, box-shadow 0.25s, border 0.25s;
-        font-size: 12px;
-    }
-    .time {
-        font-size: 11px;
-        font-weight: bold;
-        color: #333;
-    }
-    .text {
-        font-size: 11px;
-        white-space: normal;
-        overflow-wrap: break-word;
-        padding-right: 4px;
-    }
-    .duration {
-        text-align: right;
-        font-size: 11px;
-        font-weight: bold;
-        color: #444;
-    }
-
-    /* Цветовое кодирование */
-    .school     { background: #cce6ff; }
-    .music      { background: #ffe6cc; }
-    .homework   { background: #e6ffcc; }
-    .uchiru     { background: #e6ccff; }
-    .prep-music { background: #ffcccc; }
-    .default    { background: #f2f2f2; }
-
-    /* Подсветка текущего блока */
-    .highlight {
-        border: 2px solid #ffae42 !important;
-        background-color: #fff8e6 !important;
-        box-shadow: 0 0 10px 3px rgba(255, 180, 80, 0.85) !important;
-    }
-
-    /* Кнопка "сейчас" для планшета (фиксированная) */
-    #tabletNowBtn {
-        display: none;
-        position: fixed;
-        right: 12px;
-        top: 12px;
-        z-index: 1100;
-        border: 1px solid #ccc;
-        border-radius: 18px;
-        padding: 6px 14px;
-        font-size: 18px;
-        background: #ffffff;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-        cursor: pointer;
-    }
-    #tabletNowBtn:active {
-        transform: translateY(1px);
-        box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-    }
-
-    /* Вертикальная навигация дней для мобильного (справа) */
-    .mobile-side-nav {
-        display: none;
-        position: fixed;
-        right: 4px;
-        top: 50%;
-        transform: translateY(-50%);
-        z-index: 1200;
-        display: none;
-        flex-direction: column;
-        gap: 4px;
-        align-items: flex-end;
-    }
-    .mobile-side-nav button {
-        border: 1px solid #ccc;
-        border-radius: 10px;
-        padding: 4px 6px;
-        font-size: 11px;
-        background: #ffffff;
-        cursor: pointer;
-        min-width: 32px;
-        text-align: center;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-    }
-    .mobile-side-nav button:active {
-        transform: translateY(1px);
-        box-shadow: 0 0 2px rgba(0,0,0,0.2);
-    }
-    .mobile-side-nav button.active-day-btn {
-        font-weight: bold;
-        border-color: #ffae42;
-    }
-
-    /* Адаптив: планшеты и телефоны */
-    @media (max-width: 1199px) {
-        .week-container {
-            grid-template-columns: repeat(3, 1fr);
-        }
-        /* показываем кнопку ▶️ только на планшетах (600–1199) */
-        @media (min-width: 600px) {
-            #tabletNowBtn {
-                display: block;
-            }
-        }
-    }
-
-    @media (max-width: 899px) {
-        .week-container {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-
-    @media (max-width: 599px) {
-        body {
-            margin: 10px;
-        }
-        .week-container {
-            grid-template-columns: 1fr;
-        }
-        .day-column {
-            display: none; /* по умолчанию все скрыты, показываем только активный через JS */
-        }
-        .day-column.active-day {
-            display: flex;
-        }
-        /* вертикальная навигация справа включается только на мобильных */
-        .mobile-side-nav {
-            display: flex;
-        }
-        /* на мобильных планшетная кнопка не нужна */
+    /* показываем кнопку ▶️ только на планшетах (600–1199) */
+    @media (min-width: 600px) {
         #tabletNowBtn {
-            display: none !important;
+            display: block;
         }
     }
+}
+
+@media (max-width: 899px) {
+    .week-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 599px) {
+    body {
+        margin: 10px;
+    }
+    .week-container {
+        grid-template-columns: 1fr;
+    }
+    .day-column {
+        display: none; /* по умолчанию все скрыты, показываем только активный через JS */
+    }
+    .day-column.active-day {
+        display: flex;
+    }
+    /* вертикальная навигация справа включается только на мобильных */
+    .mobile-side-nav {
+        display: flex;
+    }
+    /* на мобильных планшетная кнопка не нужна */
+    #tabletNowBtn {
+        display: none !important;
+    }
+}
 </style>
 </head>
 <body>
@@ -213,544 +212,324 @@
     <button id="mobileNowBtn">▶️</button>
 </div>
 
-<div class="week-container">
-
-    <!-- ПОНЕДЕЛЬНИК -->
-    <div class="day-column" id="mon">
-        <div class="day-title">Понедельник</div>
-
-        <div class="event default" data-day="mon" data-start="06:30" data-end="06:40">
-            <div class="time">06:30</div><div class="text">Подъём</div><div class="duration">10 мин</div>
-        </div>
-        <div class="event default" data-day="mon" data-start="06:40" data-end="07:30">
-            <div class="time">06:40</div><div class="text">Завтрак, заправление кровати, сборы в школу</div><div class="duration">50 мин</div>
-        </div>
-        <div class="event default" data-day="mon" data-start="07:30" data-end="08:00">
-            <div class="time">07:30</div><div class="text">Дорога в школу. Подготовка к первому уроку</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event school" data-day="mon" data-start="08:00" data-end="12:10">
-            <div class="time">08:00</div><div class="text">Уроки по расписанию</div><div class="duration">4 ч 10 мин</div>
-        </div>
-        <div class="event default" data-day="mon" data-start="12:10" data-end="12:45">
-            <div class="time">12:10</div><div class="text">Дорога домой из школы</div><div class="duration">35 мин</div>
-        </div>
-        <div class="event default" data-day="mon" data-start="12:45" data-end="13:00">
-            <div class="time">12:45</div><div class="text">Развешивание верхней одежды, приготовление к обеду</div><div class="duration">15 мин</div>
-        </div>
-        <div class="event default" data-day="mon" data-start="13:00" data-end="13:20">
-            <div class="time">13:00</div><div class="text">Обед</div><div class="duration">20 мин</div>
-        </div>
-        <div class="event default" data-day="mon" data-start="13:20" data-end="14:00">
-            <div class="time">13:20</div><div class="text">Отдых</div><div class="duration">40 мин</div>
-        </div>
-        <div class="event prep-music" data-day="mon" data-start="14:00" data-end="14:30">
-            <div class="time">14:00</div><div class="text">Подготовка к уроку музыки (игра на инструменте)</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event default" data-day="mon" data-start="14:30" data-end="15:00">
-            <div class="time">14:30</div><div class="text">Сборы в музыкальную школу</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event default" data-day="mon" data-start="15:00" data-end="15:30">
-            <div class="time">15:00</div><div class="text">Дорога в музыкальную школу</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event music" data-day="mon" data-start="15:30" data-end="16:00">
-            <div class="time">15:30</div><div class="text">Урок в музыкальной школе (сольфеджио)</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event default" data-day="mon" data-start="16:00" data-end="16:40">
-            <div class="time">16:00</div><div class="text">Дорога из музыкальной школы</div><div class="duration">40 мин</div>
-        </div>
-        <div class="event default" data-day="mon" data-start="16:40" data-end="17:00">
-            <div class="time">16:40</div><div class="text">Развешивание верхней одежды, уборка комнаты</div><div class="duration">20 мин</div>
-        </div>
-        <div class="event default" data-day="mon" data-start="17:00" data-end="17:30">
-            <div class="time">17:00</div><div class="text">Игра на инструменте</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event default" data-day="mon" data-start="17:30" data-end="18:00">
-            <div class="time">17:30</div><div class="text">Свободное время / помощь маме по дому</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event default" data-day="mon" data-start="18:00" data-end="18:30">
-            <div class="time">18:00</div><div class="text">Ужин</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event homework" data-day="mon" data-start="18:30" data-end="19:30">
-            <div class="time">18:30</div><div class="text">Выполнение домашнего задания</div><div class="duration">60 мин</div>
-        </div>
-        <div class="event default" data-day="mon" data-start="19:30" data-end="20:30">
-            <div class="time">19:30</div><div class="text">Свободное время</div><div class="duration">60 мин</div>
-        </div>
-        <div class="event uchiru" data-day="mon" data-start="20:30" data-end="21:00">
-            <div class="time">20:30</div><div class="text">Учи.ру</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event default" data-day="mon" data-start="21:00" data-end="23:59">
-            <div class="time">21:00</div><div class="text">Сон</div><div class="duration">9 ч 30 мин</div>
-        </div>
-    </div>
-
-    <!-- ВТОРНИК -->
-    <div class="day-column" id="tue">
-        <div class="day-title">Вторник</div>
-
-        <div class="event default" data-day="tue" data-start="06:30" data-end="06:40">
-            <div class="time">06:30</div><div class="text">Подъём</div><div class="duration">10 мин</div>
-        </div>
-        <div class="event default" data-day="tue" data-start="06:40" data-end="07:30">
-            <div class="time">06:40</div><div class="text">Завтрак, заправление кровати, сборы в школу</div><div class="duration">50 мин</div>
-        </div>
-        <div class="event default" data-day="tue" data-start="07:30" data-end="08:00">
-            <div class="time">07:30</div><div class="text">Дорога в школу. Подготовка к первому уроку</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event school" data-day="tue" data-start="08:00" data-end="12:25">
-            <div class="time">08:00</div><div class="text">Уроки по расписанию</div><div class="duration">4 ч 25 мин</div>
-        </div>
-        <div class="event default" data-day="tue" data-start="12:25" data-end="12:45">
-            <div class="time">12:25</div><div class="text">Дорога домой из школы</div><div class="duration">20 мин</div>
-        </div>
-        <div class="event default" data-day="tue" data-start="12:45" data-end="13:00">
-            <div class="time">12:45</div><div class="text">Развешивание верхней одежды, приготовление к обеду</div><div class="duration">15 мин</div>
-        </div>
-        <div class="event default" data-day="tue" data-start="13:00" data-end="13:20">
-            <div class="time">13:00</div><div class="text">Обед</div><div class="duration">20 мин</div>
-        </div>
-        <div class="event default" data-day="tue" data-start="13:20" data-end="13:30">
-            <div class="time">13:20</div><div class="text">Отдых</div><div class="duration">10 мин</div>
-        </div>
-        <div class="event prep-music" data-day="tue" data-start="13:30" data-end="14:00">
-            <div class="time">13:30</div><div class="text">Подготовка к уроку музыки (игра на инструменте)</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event default" data-day="tue" data-start="14:00" data-end="14:25">
-            <div class="time">14:00</div><div class="text">Сборы в музыкальную школу</div><div class="duration">25 мин</div>
-        </div>
-        <div class="event default" data-day="tue" data-start="14:25" data-end="15:00">
-            <div class="time">14:25</div><div class="text">Дорога в музыкальную школу</div><div class="duration">35 мин</div>
-        </div>
-        <div class="event music" data-day="tue" data-start="15:00" data-end="15:30">
-            <div class="time">15:00</div><div class="text">Урок в музыкальной школе (вокал)</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event default" data-day="tue" data-start="15:30" data-end="16:00">
-            <div class="time">15:30</div><div class="text">Дорога из музыкальной школы</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event default" data-day="tue" data-start="16:00" data-end="16:40">
-            <div class="time">16:00</div><div class="text">Отдых</div><div class="duration">40 мин</div>
-        </div>
-        <div class="event default" data-day="tue" data-start="16:40" data-end="17:00">
-            <div class="time">16:40</div><div class="text">Развешивание верхней одежды, уборка комнаты</div><div class="duration">20 мин</div>
-        </div>
-        <div class="event default" data-day="tue" data-start="17:00" data-end="17:30">
-            <div class="time">17:00</div><div class="text">Отдых</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event homework" data-day="tue" data-start="17:30" data-end="18:00">
-            <div class="time">17:30</div><div class="text">Выполнение домашнего задания</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event default" data-day="tue" data-start="18:00" data-end="18:30">
-            <div class="time">18:00</div><div class="text">Ужин</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event uchiru" data-day="tue" data-start="18:30" data-end="19:30">
-            <div class="time">18:30</div><div class="text">Учи.ру</div><div class="duration">60 мин</div>
-        </div>
-        <div class="event default" data-day="tue" data-start="19:30" data-end="20:00">
-            <div class="time">19:30</div><div class="text">Игра на инструменте</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event default" data-day="tue" data-start="20:00" data-end="20:30">
-            <div class="time">20:00</div><div class="text">Свободное время</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event default" data-day="tue" data-start="20:30" data-end="21:00">
-            <div class="time">20:30</div><div class="text">Чтение</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event default" data-day="tue" data-start="21:00" data-end="23:59">
-            <div class="time">21:00</div><div class="text">Сон</div><div class="duration">9 ч 30 мин</div>
-        </div>
-    </div>
-
-    <!-- СРЕДА -->
-    <div class="day-column" id="wed">
-        <div class="day-title">Среда</div>
-
-        <div class="event default" data-day="wed" data-start="06:30" data-end="06:40">
-            <div class="time">06:30</div><div class="text">Подъём</div><div class="duration">10 мин</div>
-        </div>
-        <div class="event default" data-day="wed" data-start="06:40" data-end="07:30">
-            <div class="time">06:40</div><div class="text">Завтрак, заправление кровати, сборы в школу</div><div class="duration">50 мин</div>
-        </div>
-        <div class="event default" data-day="wed" data-start="07:30" data-end="08:00">
-            <div class="time">07:30</div><div class="text">Дорога в школу. Подготовка к первому уроку</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event school" data-day="wed" data-start="08:00" data-end="11:30">
-            <div class="time">08:00</div><div class="text">Уроки по расписанию</div><div class="duration">3 ч 30 мин</div>
-        </div>
-        <div class="event default" data-day="wed" data-start="11:30" data-end="11:50">
-            <div class="time">11:30</div><div class="text">Дорога домой из школы</div><div class="duration">20 мин</div>
-        </div>
-        <div class="event default" data-day="wed" data-start="11:50" data-end="12:00">
-            <div class="time">11:50</div><div class="text">Развешивание верхней одежды, приготовление к обеду</div><div class="duration">10 мин</div>
-        </div>
-        <div class="event default" data-day="wed" data-start="12:00" data-end="12:10">
-            <div class="time">12:00</div><div class="text">Обед</div><div class="duration">10 мин</div>
-        </div>
-        <div class="event prep-music" data-day="wed" data-start="12:10" data-end="12:15">
-            <div class="time">12:10</div><div class="text">Сборы в музыкальную школу</div><div class="duration">5 мин</div>
-        </div>
-        <div class="event default" data-day="wed" data-start="12:15" data-end="12:50">
-            <div class="time">12:15</div><div class="text">Дорога в музыкальную школу</div><div class="duration">35 мин</div>
-        </div>
-        <div class="event music" data-day="wed" data-start="12:50" data-end="13:40">
-            <div class="time">12:50</div><div class="text">Урок в музыкальной школе (вокал)</div><div class="duration">50 мин</div>
-        </div>
-        <div class="event default" data-day="wed" data-start="13:40" data-end="14:00">
-            <div class="time">13:40</div><div class="text">Дорога из музыкальной школы</div><div class="duration">20 мин</div>
-        </div>
-        <div class="event default" data-day="wed" data-start="14:00" data-end="14:10">
-            <div class="time">14:00</div><div class="text">Развешивание верхней одежды, уборка комнаты</div><div class="duration">10 мин</div>
-        </div>
-        <div class="event default" data-day="wed" data-start="14:10" data-end="15:10">
-            <div class="time">14:10</div><div class="text">Отдых</div><div class="duration">60 мин</div>
-        </div>
-        <div class="event prep-music" data-day="wed" data-start="15:10" data-end="16:05">
-            <div class="time">15:10</div><div class="text">Подготовка к уроку музыки (игра на инструменте)</div><div class="duration">55 мин</div>
-        </div>
-        <div class="event default" data-day="wed" data-start="16:05" data-end="16:10">
-            <div class="time">16:05</div><div class="text">Сборы в школу на дополнительный русский</div><div class="duration">5 мин</div>
-        </div>
-        <div class="event default" data-day="wed" data-start="16:10" data-end="16:40">
-            <div class="time">16:10</div><div class="text">Дорога в школу</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event school" data-day="wed" data-start="16:40" data-end="17:30">
-            <div class="time">16:40</div><div class="text">Дополнительный русский в школе</div><div class="duration">50 мин</div>
-        </div>
-        <div class="event default" data-day="wed" data-start="17:30" data-end="18:00">
-            <div class="time">17:30</div><div class="text">Дорога домой из школы</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event default" data-day="wed" data-start="18:00" data-end="18:30">
-            <div class="time">18:00</div><div class="text">Ужин</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event homework" data-day="wed" data-start="18:30" data-end="20:00">
-            <div class="time">18:30</div><div class="text">Выполнение домашнего задания</div><div class="duration">1 ч 30 мин</div>
-        </div>
-        <div class="event default" data-day="wed" data-start="20:00" data-end="20:30">
-            <div class="time">20:00</div><div class="text">Свободное время</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event default" data-day="wed" data-start="20:30" data-end="21:00">
-            <div class="time">20:30</div><div class="text">Чтение</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event default" data-day="wed" data-start="21:00" data-end="23:59">
-            <div class="time">21:00</div><div class="text">Сон</div><div class="duration">9 ч 30 мин</div>
-        </div>
-    </div>
-
-    <!-- ЧЕТВЕРГ -->
-    <div class="day-column" id="thu">
-        <div class="day-title">Четверг</div>
-
-        <div class="event default" data-day="thu" data-start="06:30" data-end="06:40">
-            <div class="time">06:30</div><div class="text">Подъём</div><div class="duration">10 мин</div>
-        </div>
-        <div class="event default" data-day="thu" data-start="06:40" data-end="07:30">
-            <div class="time">06:40</div><div class="text">Завтрак, заправление кровати, сборы в школу</div><div class="duration">50 мин</div>
-        </div>
-        <div class="event default" data-day="thu" data-start="07:30" data-end="08:00">
-            <div class="time">07:30</div><div class="text">Дорога в школу. Подготовка к первому уроку</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event school" data-day="thu" data-start="08:00" data-end="12:25">
-            <div class="time">08:00</div><div class="text">Уроки по расписанию</div><div class="duration">4 ч 25 мин</div>
-        </div>
-        <div class="event default" data-day="thu" data-start="12:25" data-end="12:45">
-            <div class="time">12:25</div><div class="text">Дорога домой из школы</div><div class="duration">20 мин</div>
-        </div>
-        <div class="event default" data-day="thu" data-start="12:45" data-end="13:00">
-            <div class="time">12:45</div><div class="text">Развешивание верхней одежды, приготовление к обеду</div><div class="duration">15 мин</div>
-        </div>
-        <div class="event default" data-day="thu" data-start="13:00" data-end="13:20">
-            <div class="time">13:00</div><div class="text">Обед</div><div class="duration">20 мин</div>
-        </div>
-        <div class="event prep-music" data-day="thu" data-start="13:20" data-end="13:50">
-            <div class="time">13:20</div><div class="text">Подготовка к уроку музыки (игра на инструменте)</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event default" data-day="thu" data-start="13:50" data-end="14:00">
-            <div class="time">13:50</div><div class="text">Сборы в музыкальную школу</div><div class="duration">10 мин</div>
-        </div>
-        <div class="event default" data-day="thu" data-start="14:00" data-end="14:30">
-            <div class="time">14:00</div><div class="text">Дорога в музыкальную школу</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event music" data-day="thu" data-start="14:30" data-end="15:30">
-            <div class="time">14:30</div><div class="text">Урок в музыкальной школе (сольфеджио)</div><div class="duration">60 мин</div>
-        </div>
-        <div class="event music" data-day="thu" data-start="15:30" data-end="16:20">
-            <div class="time">15:30</div><div class="text">Урок в музыкальной школе (специальность)</div><div class="duration">50 мин</div>
-        </div>
-        <div class="event default" data-day="thu" data-start="16:20" data-end="16:50">
-            <div class="time">16:20</div><div class="text">Дорога из музыкальной школы</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event default" data-day="thu" data-start="16:50" data-end="17:00">
-            <div class="time">16:50</div><div class="text">Развешивание верхней одежды, уборка комнаты</div><div class="duration">10 мин</div>
-        </div>
-        <div class="event default" data-day="thu" data-start="17:00" data-end="17:40">
-            <div class="time">17:00</div><div class="text">Свободное время / помощь маме по дому</div><div class="duration">40 мин</div>
-        </div>
-        <div class="event default" data-day="thu" data-start="17:40" data-end="18:00">
-            <div class="time">17:40</div><div class="text">Ужин</div><div class="duration">20 мин</div>
-        </div>
-        <div class="event uchiru" data-day="thu" data-start="18:00" data-end="19:30">
-            <div class="time">18:00</div><div class="text">Учи.ру</div><div class="duration">1 ч 30 мин</div>
-        </div>
-        <div class="event default" data-day="thu" data-start="19:30" data-end="20:30">
-            <div class="time">19:30</div><div class="text">Свободное время</div><div class="duration">60 мин</div>
-        </div>
-        <div class="event default" data-day="thu" data-start="20:30" data-end="21:00">
-            <div class="time">20:30</div><div class="text">Чтение</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event default" data-day="thu" data-start="21:00" data-end="23:59">
-            <div class="time">21:00</div><div class="text">Сон</div><div class="duration">9 ч 30 мин</div>
-        </div>
-    </div>
-
-    <!-- ПЯТНИЦА -->
-    <div class="day-column" id="fri">
-        <div class="day-title">Пятница</div>
-
-        <div class="event default" data-day="fri" data-start="06:30" data-end="06:40">
-            <div class="time">06:30</div><div class="text">Подъём</div><div class="duration">10 мин</div>
-        </div>
-        <div class="event default" data-day="fri" data-start="06:40" data-end="07:30">
-            <div class="time">06:40</div><div class="text">Завтрак, заправление кровати, сборы в школу</div><div class="duration">50 мин</div>
-        </div>
-        <div class="event default" data-day="fri" data-start="07:30" data-end="08:00">
-            <div class="time">07:30</div><div class="text">Дорога в школу. Подготовка к первому уроку</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event school" data-day="fri" data-start="08:00" data-end="12:25">
-            <div class="time">08:00</div><div class="text">Уроки по расписанию</div><div class="duration">4 ч 25 мин</div>
-        </div>
-        <div class="event default" data-day="fri" data-start="12:25" data-end="12:45">
-            <div class="time">12:25</div><div class="text">Дорога домой из школы</div><div class="duration">20 мин</div>
-        </div>
-        <div class="event default" data-day="fri" data-start="12:45" data-end="13:00">
-            <div class="time">12:45</div><div class="text">Развешивание верхней одежды, приготовление к обеду</div><div class="duration">15 мин</div>
-        </div>
-        <div class="event default" data-day="fri" data-start="13:00" data-end="13:20">
-            <div class="time">13:00</div><div class="text">Обед</div><div class="duration">20 мин</div>
-        </div>
-        <div class="event default" data-day="fri" data-start="13:20" data-end="13:45">
-            <div class="time">13:20</div><div class="text">Сборы в музыкальную школу</div><div class="duration">25 мин</div>
-        </div>
-        <div class="event default" data-day="fri" data-start="13:45" data-end="14:10">
-            <div class="time">13:45</div><div class="text">Дорога в музыкальную школу</div><div class="duration">25 мин</div>
-        </div>
-        <div class="event music" data-day="fri" data-start="14:10" data-end="15:00">
-            <div class="time">14:10</div><div class="text">Урок в музыкальной школе (слушание музыки)</div><div class="duration">50 мин</div>
-        </div>
-        <div class="event default" data-day="fri" data-start="15:00" data-end="15:30">
-            <div class="time">15:00</div><div class="text">Перерыв между уроками</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event music" data-day="fri" data-start="15:30" data-end="16:40">
-            <div class="time">15:30</div><div class="text">Урок в музыкальной школе (специальность)</div><div class="duration">1 ч 10 мин</div>
-        </div>
-        <div class="event default" data-day="fri" data-start="16:40" data-end="16:50">
-            <div class="time">16:40</div><div class="text">Дорога из музыкальной школы</div><div class="duration">10 мин</div>
-        </div>
-        <div class="event default" data-day="fri" data-start="16:50" data-end="17:30">
-            <div class="time">16:50</div><div class="text">Развешивание верхней одежды, уборка комнаты</div><div class="duration">40 мин</div>
-        </div>
-        <div class="event default" data-day="fri" data-start="17:30" data-end="18:00">
-            <div class="time">17:30</div><div class="text">Свободное время / помощь маме по дому</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event default" data-day="fri" data-start="18:00" data-end="18:30">
-            <div class="time">18:00</div><div class="text">Ужин</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event uchiru" data-day="fri" data-start="18:30" data-end="19:30">
-            <div class="time">18:30</div><div class="text">Учи.ру</div><div class="duration">60 мин</div>
-        </div>
-        <div class="event default" data-day="fri" data-start="19:30" data-end="20:30">
-            <div class="time">19:30</div><div class="text">Свободное время</div><div class="duration">60 мин</div>
-        </div>
-        <div class="event default" data-day="fri" data-start="20:30" data-end="21:00">
-            <div class="time">20:30</div><div class="text">Чтение</div><div class="duration">30 мин</div>
-        </div>
-        <div class="event default" data-day="fri" data-start="21:00" data-end="23:59">
-            <div class="time">21:00</div><div class="text">Сон</div><div class="duration">9 ч 30 мин</div>
-        </div>
-    </div>
-
+<div class="week-container" id="weekContainer">
+    <!-- Деньки и события будут сгенерированы динамически из Google Sheets -->
 </div>
 
 <script>
-    const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri'];
+// === Конфигурация ===
+const SHEET_JSON_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTYBAcXFTIcphfEyjNyTszMEGJxuhTHoGZC-6nL7aLjokDPKGgLHRCWvLTBfK2Pu9wUohRstIk9Rxg7/gviz/tq?tqx=out:json&gid=0";
 
-    function timeToMinutes(str) {
-        const [h, m] = str.split(':').map(Number);
-        return h * 60 + m;
+const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri'];
+const DAY_TITLES = {
+    mon: 'Понедельник',
+    tue: 'Вторник',
+    wed: 'Среда',
+    thu: 'Четверг',
+    fri: 'Пятница'
+};
+
+// === Вспомогательные функции времени и длительности ===
+function timeToMinutes(str) {
+    const [h, m] = str.split(':').map(Number);
+    return h * 60 + m;
+}
+
+function formatDurationStr(startStr, endStr) {
+    const start = timeToMinutes(startStr);
+    const end = timeToMinutes(endStr);
+    let diff = end - start;
+    if (diff < 0) diff += 24 * 60; // на всякий случай для перехода через полночь
+
+    const hours = Math.floor(diff / 60);
+    const mins = diff % 60;
+    const parts = [];
+    if (hours > 0) parts.push(hours + ' ч');
+    if (mins > 0) parts.push(mins + ' мин');
+    if (!parts.length) parts.push('0 мин');
+    return parts.join(' ');
+}
+
+// === Загрузка расписания из Google Sheets ===
+async function loadScheduleFromGoogle() {
+    const response = await fetch(SHEET_JSON_URL);
+    const text = await response.text();
+
+    // gviz/tq возвращает JSONP, нужно вырезать чистый JSON
+    const json = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
+    const rows = json.table.rows;
+
+    // Структура: day_key | time_start | time_end | text | type
+    const schedule = {
+        mon: [],
+        tue: [],
+        wed: [],
+        thu: [],
+        fri: []
+    };
+
+    rows.forEach(r => {
+        if (!r.c) return;
+        const day_key    = r.c[0]?.v;
+        const time_start = r.c[1]?.v;
+        const time_end   = r.c[2]?.v;
+        const text       = r.c[3]?.v || '';
+        const type       = r.c[4]?.v || 'default';
+
+        if (!day_key || !time_start || !time_end) return;
+        if (!(day_key in schedule)) return;
+
+        schedule[day_key].push({
+            day: day_key,
+            start: time_start,
+            end: time_end,
+            text,
+            type
+        });
+    });
+
+    // Автосортировка по времени внутри каждого дня
+    for (const key of DAY_KEYS) {
+        schedule[key].sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
     }
 
-    function getTodayKey() {
-        const now = new Date();
-        const weekday = now.getDay(); // 0=Sun,1=Mon,...,6=Sat
-        const map = { 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri' };
-        return map[weekday] || null;
+    return schedule;
+}
+
+// === Рендер расписания в DOM ===
+async function renderSchedule() {
+    const schedule = await loadScheduleFromGoogle();
+    const container = document.getElementById('weekContainer');
+    container.innerHTML = '';
+
+    for (const dayKey of DAY_KEYS) {
+        const dayColumn = document.createElement('div');
+        dayColumn.className = 'day-column';
+        dayColumn.id = dayKey;
+
+        const title = document.createElement('div');
+        title.className = 'day-title';
+        title.textContent = DAY_TITLES[dayKey] || dayKey;
+        dayColumn.appendChild(title);
+
+        const events = schedule[dayKey] || [];
+        events.forEach(ev => {
+            const evDiv = document.createElement('div');
+            evDiv.className = 'event ' + (ev.type || 'default');
+            evDiv.dataset.day = dayKey;
+            evDiv.dataset.start = ev.start;
+            evDiv.dataset.end = ev.end;
+
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'time';
+            timeDiv.textContent = ev.start;
+
+            const textDiv = document.createElement('div');
+            textDiv.className = 'text';
+            textDiv.textContent = ev.text;
+
+            const durDiv = document.createElement('div');
+            durDiv.className = 'duration';
+            durDiv.textContent = formatDurationStr(ev.start, ev.end);
+
+            evDiv.appendChild(timeDiv);
+            evDiv.appendChild(textDiv);
+            evDiv.appendChild(durDiv);
+
+            dayColumn.appendChild(evDiv);
+        });
+
+        container.appendChild(dayColumn);
     }
+}
 
-    function findCurrentEventForDay(dayKey) {
-        const now = new Date();
-        const nowMin = now.getHours() * 60 + now.getMinutes();
-        const events = Array.from(document.querySelectorAll('.event[data-day="' + dayKey + '"]'));
-        if (!events.length) return null;
+// === Логика подсветки и навигации (та, что у тебя была) ===
+function getTodayKey() {
+    const now = new Date();
+    const weekday = now.getDay(); // 0=Sun,1=Mon,...,6=Sat
+    const map = { 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri' };
+    return map[weekday] || null;
+}
 
-        let exact = null;
-        let lastBefore = null;
+function findCurrentEventForDay(dayKey) {
+    const now = new Date();
+    const nowMin = now.getHours() * 60 + now.getMinutes();
+    const events = Array.from(document.querySelectorAll('.event[data-day="' + dayKey + '"]'));
+    if (!events.length) return null;
 
-        for (const ev of events) {
-            const start = timeToMinutes(ev.dataset.start);
-            const end = timeToMinutes(ev.dataset.end);
+    let exact = null;
+    let lastBefore = null;
 
-            if (nowMin >= start && nowMin < end) {
-                exact = ev;
-                break;
-            }
-            if (nowMin >= start) lastBefore = ev;
+    for (const ev of events) {
+        const start = timeToMinutes(ev.dataset.start);
+        const end = timeToMinutes(ev.dataset.end);
+
+        if (nowMin >= start && nowMin < end) {
+            exact = ev;
+            break;
         }
-
-        return exact || lastBefore || events[0];
+        if (nowMin >= start) lastBefore = ev;
     }
 
-    function clearHighlight() {
-        document.querySelectorAll('.event.highlight')
-            .forEach(el => el.classList.remove('highlight'));
-    }
+    return exact || lastBefore || events[0];
+}
 
-    function highlightAndScroll(ev) {
-        if (!ev) return;
-        clearHighlight();
-        ev.classList.add('highlight');
-        ev.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+function clearHighlight() {
+    document.querySelectorAll('.event.highlight')
+        .forEach(el => el.classList.remove('highlight'));
+}
 
-    function isMobile() {
-        return window.innerWidth < 600;
-    }
+function highlightAndScroll(ev) {
+    if (!ev) return;
+    clearHighlight();
+    ev.classList.add('highlight');
+    ev.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
 
-    let activeDayIndex = 0;
-    let lastIsMobile = null;
+function isMobile() {
+    return window.innerWidth < 600;
+}
 
-    function showAllDaysDesktopTablet() {
-        document.querySelectorAll('.day-column').forEach(col => {
-            col.classList.remove('active-day');
+let activeDayIndex = 0;
+let lastIsMobile = null;
+
+function showAllDaysDesktopTablet() {
+    document.querySelectorAll('.day-column').forEach(col => {
+        col.classList.remove('active-day');
+        col.style.display = 'flex';
+    });
+}
+
+function setActiveDayForMobile(index) {
+    activeDayIndex = (index + DAY_KEYS.length) % DAY_KEYS.length;
+    const activeKey = DAY_KEYS[activeDayIndex];
+
+    document.querySelectorAll('.day-column').forEach(col => {
+        if (col.id === activeKey) {
+            col.classList.add('active-day');
             col.style.display = 'flex';
-        });
-    }
-
-    function setActiveDayForMobile(index) {
-        activeDayIndex = (index + DAY_KEYS.length) % DAY_KEYS.length;
-        const activeKey = DAY_KEYS[activeDayIndex];
-
-        document.querySelectorAll('.day-column').forEach(col => {
-            if (col.id === activeKey) {
-                col.classList.add('active-day');
-                col.style.display = 'flex';
-            } else {
-                col.classList.remove('active-day');
-                col.style.display = 'none';
-            }
-        });
-
-        // обновляем подсветку активной кнопки справа
-        const sideButtons = document.querySelectorAll('.mobile-side-nav button[data-day-index]');
-        sideButtons.forEach(btn => {
-            btn.classList.toggle('active-day-btn', parseInt(btn.dataset.dayIndex, 10) === activeDayIndex);
-        });
-
-        // при переключении дня прокручиваем к началу
-        window.scrollTo({ top: 0 });
-
-        // если это сегодняшний день — подсветить текущий блок
-        const todayKey = getTodayKey();
-        if (todayKey && todayKey === activeKey) {
-            const ev = findCurrentEventForDay(activeKey);
-            if (ev) highlightAndScroll(ev);
         } else {
-            clearHighlight();
+            col.classList.remove('active-day');
+            col.style.display = 'none';
         }
-    }
+    });
 
-    function highlightTodayDesktopOrTablet() {
-        const todayKey = getTodayKey();
-        if (!todayKey) return;
-        const ev = findCurrentEventForDay(todayKey);
+    // обновляем подсветку активной кнопки справа
+    const sideButtons = document.querySelectorAll('.mobile-side-nav button[data-day-index]');
+    sideButtons.forEach(btn => {
+        btn.classList.toggle('active-day-btn', parseInt(btn.dataset.dayIndex, 10) === activeDayIndex);
+    });
+
+    // при переключении дня прокручиваем к началу
+    window.scrollTo({ top: 0 });
+
+    // если это сегодняшний день — подсветить текущий блок
+    const todayKey = getTodayKey();
+    if (todayKey && todayKey === activeKey) {
+        const ev = findCurrentEventForDay(activeKey);
         if (ev) highlightAndScroll(ev);
+    } else {
+        clearHighlight();
+    }
+}
+
+function highlightTodayDesktopOrTablet() {
+    const todayKey = getTodayKey();
+    if (!todayKey) return;
+    const ev = findCurrentEventForDay(todayKey);
+    if (ev) highlightAndScroll(ev);
+}
+
+function handleResize() {
+    const mobileNow = isMobile();
+    if (mobileNow === lastIsMobile) return; // режим не поменялся
+
+    lastIsMobile = mobileNow;
+
+    if (mobileNow) {
+        // переход в мобильный режим
+        const todayKey = getTodayKey();
+        let idx = 0;
+        if (todayKey) {
+            const found = DAY_KEYS.indexOf(todayKey);
+            if (found >= 0) idx = found;
+        }
+        setActiveDayForMobile(idx);
+    } else {
+        // планшет/десктоп
+        showAllDaysDesktopTablet();
+        clearHighlight();
+        highlightTodayDesktopOrTablet();
+    }
+}
+
+function initInteractions() {
+    lastIsMobile = isMobile();
+
+    if (lastIsMobile) {
+        const todayKey = getTodayKey();
+        let idx = 0;
+        if (todayKey) {
+            const found = DAY_KEYS.indexOf(todayKey);
+            if (found >= 0) idx = found;
+        }
+        setActiveDayForMobile(idx);
+    } else {
+        showAllDaysDesktopTablet();
+        highlightTodayDesktopOrTablet();
     }
 
-    function handleResize() {
-        const mobileNow = isMobile();
-        if (mobileNow === lastIsMobile) return; // режим не поменялся
-
-        lastIsMobile = mobileNow;
-
-        if (mobileNow) {
-            // переход в мобильный режим
-            const todayKey = getTodayKey();
-            let idx = 0;
-            if (todayKey) {
-                const found = DAY_KEYS.indexOf(todayKey);
-                if (found >= 0) idx = found;
+    // Кнопка планшета ▶️
+    const tabletBtn = document.getElementById('tabletNowBtn');
+    if (tabletBtn) {
+        tabletBtn.addEventListener('click', () => {
+            if (!isMobile()) {
+                highlightTodayDesktopOrTablet();
             }
-            setActiveDayForMobile(idx);
-        } else {
-            // планшет/десктоп
-            showAllDaysDesktopTablet();
-            clearHighlight();
-            highlightTodayDesktopOrTablet();
-        }
+        });
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        lastIsMobile = isMobile();
-
-        if (lastIsMobile) {
-            const todayKey = getTodayKey();
-            let idx = 0;
-            if (todayKey) {
-                const found = DAY_KEYS.indexOf(todayKey);
-                if (found >= 0) idx = found;
-            }
-            setActiveDayForMobile(idx);
-        } else {
-            showAllDaysDesktopTablet();
-            highlightTodayDesktopOrTablet();
-        }
-
-        // Кнопка планшета ▶️
-        const tabletBtn = document.getElementById('tabletNowBtn');
-        if (tabletBtn) {
-            tabletBtn.addEventListener('click', () => {
-                if (!isMobile()) {
-                    highlightTodayDesktopOrTablet();
+    // Мобильная вертикальная навигация
+    const sideNav = document.getElementById('mobileSideNav');
+    if (sideNav) {
+        const dayButtons = sideNav.querySelectorAll('button[data-day-index]');
+        dayButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (isMobile()) {
+                    const idx = parseInt(btn.dataset.dayIndex, 10);
+                    setActiveDayForMobile(idx);
                 }
             });
-        }
+        });
 
-        // Мобильная вертикальная навигация
-        const sideNav = document.getElementById('mobileSideNav');
-        if (sideNav) {
-            const dayButtons = sideNav.querySelectorAll('button[data-day-index]');
-            dayButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    if (isMobile()) {
-                        const idx = parseInt(btn.dataset.dayIndex, 10);
-                        setActiveDayForMobile(idx);
-                    }
-                });
+        const mobileNowBtn = document.getElementById('mobileNowBtn');
+        if (mobileNowBtn) {
+            mobileNowBtn.addEventListener('click', () => {
+                if (!isMobile()) return;
+                const todayKey = getTodayKey();
+                let idx = 0;
+                if (todayKey) {
+                    const found = DAY_KEYS.indexOf(todayKey);
+                    if (found >= 0) idx = found;
+                }
+                setActiveDayForMobile(idx);
             });
-
-            const mobileNowBtn = document.getElementById('mobileNowBtn');
-            if (mobileNowBtn) {
-                mobileNowBtn.addEventListener('click', () => {
-                    if (!isMobile()) return;
-                    const todayKey = getTodayKey();
-                    let idx = 0;
-                    if (todayKey) {
-                        const found = DAY_KEYS.indexOf(todayKey);
-                        if (found >= 0) idx = found;
-                    }
-                    setActiveDayForMobile(idx);
-                });
-            }
         }
+    }
 
-        window.addEventListener('resize', handleResize);
-    });
+    window.addEventListener('resize', handleResize);
+}
+
+// Инициализация: сначала загружаем и рендерим расписание, затем включаем логику
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        await renderSchedule();
+        initInteractions();
+    } catch (e) {
+        console.error('Ошибка при загрузке расписания из Google Sheets', e);
+    }
+});
 </script>
 
 <script>

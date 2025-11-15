@@ -1,52 +1,62 @@
-const CACHE_NAME = "schedule-soa-v1";
-const urlsToCache = [
+const CACHE_NAME = "schedule-cache-v1";
+const URLS_TO_CACHE = [
   "./",
   "./index.html",
   "./manifest.json",
-  "./icons/app_icon_192.png",
-  "./icons/app_icon_512.png"
 ];
 
 // Установка Service Worker
 self.addEventListener("install", (event) => {
-  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(urlsToCache);
+      return cache.addAll(URLS_TO_CACHE);
     })
   );
+  self.skipWaiting();
 });
 
-// Активация: удаление старого кэша
+// Активация
 self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
-      );
-    })
-  );
-  self.clients.claim();
+  event.waitUntil(self.clients.claim());
 });
 
 // Перехват запросов
 self.addEventListener("fetch", (event) => {
+  const url = event.request.url;
+
+  // ❗ Игнорируем служебные URL браузера и расширений
+  if (
+    url.startsWith("chrome-extension://") ||
+    url.startsWith("chrome://") ||
+    url.startsWith("devtools://")
+  ) {
+    return; // ничего не делаем
+  }
+
   event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, clone);
-        });
-        return response;
-      })
-      .catch(() => caches.match(event.request))
+    caches.match(event.request).then((cached) => {
+      return (
+        cached ||
+        fetch(event.request).then((response) => {
+          // Кэшируем ТОЛЬКО безопасные нормальные URL
+          if (
+            event.request.method === "GET" &&
+            response.status === 200 &&
+            response.type === "basic"
+          ) {
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseClone);
+            });
+          }
+          return response;
+        })
+      );
+    })
   );
 });
 
-// Сообщение от страницы: SKIP_WAITING для мгновенного обновления
+// Получение команды SKIP_WAITING
 self.addEventListener("message", (event) => {
   if (event.data === "SKIP_WAITING") {
     self.skipWaiting();

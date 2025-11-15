@@ -1,10 +1,10 @@
 {
-  "name": "Расписание недели",
+  "name": "Расписание Оли",
   "short_name": "Расписание",
-  "start_url": "index.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "theme_color": "#ffae42",
   "icons": [
     {
       "src": "icons/app_icon_192.png",

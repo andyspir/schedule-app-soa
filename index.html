@@ -124,7 +124,7 @@ body {
     text-align: center;
 }
 
-/* Адаптивность */
+/* Адаптивность по ширине */
 @media (max-width: 1199px) {
     .week-container { grid-template-columns: repeat(3, 1fr); }
 }
@@ -169,14 +169,14 @@ body {
 </div>
 
 <script>
-// ==== Конфигурация источника CSV ====
+// ==== Конфигурация CSV ====
 const SHEET_CSV_URL =
  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTYBAcXFTIcphfEyjNyTszMEGJxuhTHoGZC-6nL7aLjokDPKGgLHRCWvLTBfK2Pu9wUohRstIk9Rxg7/pub?gid=0&single=true&output=csv";
 
 const DAY_KEYS   = ['mon','tue','wed','thu','fri'];
 const DAY_TITLES = { mon:'Понедельник', tue:'Вторник', wed:'Среда', thu:'Четверг', fri:'Пятница' };
 
-// ==== Умный парсер CSV (с запятыми и кавычками) ====
+// ==== CSV-парсер (учитывает кавычки и запятые внутри текста) ====
 function parseCSVLine(line) {
     const result = [];
     let cur = '';
@@ -184,7 +184,6 @@ function parseCSVLine(line) {
 
     for (let i = 0; i < line.length; i++) {
         const c = line[i];
-
         if (c === '"' && line[i+1] === '"') {
             cur += '"';
             i++;
@@ -201,7 +200,7 @@ function parseCSVLine(line) {
     return result;
 }
 
-// ==== Работа со временем и длительностью ====
+// ==== Время и длительность ====
 function timeToMinutes(t){
     const [h,m] = t.split(':').map(Number);
     return h*60 + m;
@@ -209,17 +208,17 @@ function timeToMinutes(t){
 
 function formatDuration(start,end){
     let d = timeToMinutes(end) - timeToMinutes(start);
-    if (d < 0) d += 1440;           // переход через полночь
+    if (d < 0) d += 1440; // переход через полночь
     const h = Math.floor(d/60);
     const m = d % 60;
-    let parts = [];
+    const parts = [];
     if (h > 0) parts.push(h + ' ч');
     if (m > 0) parts.push(m + ' мин');
     if (!parts.length) parts.push('0 мин');
     return parts.join(' ');
 }
 
-// ==== Загрузка расписания из CSV ====
+// ==== Загрузка расписания из Google Sheets (CSV) ====
 async function loadSchedule(){
     const resp = await fetch(SHEET_CSV_URL);
     const csv  = await resp.text();
@@ -227,15 +226,16 @@ async function loadSchedule(){
 
     const schedule = {mon:[],tue:[],wed:[],thu:[],fri:[]};
 
-    for(let i = 1; i < lines.length; i++){      // пропускаем заголовок
+    // пропускаем строку заголовков (i = 1)
+    for(let i = 1; i < lines.length; i++){
         const cols = parseCSVLine(lines[i]);
         if (cols.length < 5) continue;
 
-        const day  = (cols[0] || '').trim();
-        const start= (cols[1] || '').trim();
-        let   end  = (cols[2] || '').trim();
-        const text = (cols[3] || '').trim();
-        const type = (cols[4] || '').trim() || 'default';
+        const day   = (cols[0] || '').trim();
+        const start = (cols[1] || '').trim();
+        let   end   = (cols[2] || '').trim();
+        const text  = (cols[3] || '').trim();
+        const type  = (cols[4] || '').trim() || 'default';
 
         if (!day || !start || !text) continue;
         if (!schedule[day]) continue;
@@ -243,12 +243,12 @@ async function loadSchedule(){
         schedule[day].push({ day, start, end, text, type });
     }
 
-    // Сортируем и применяем правило "последний блок до 06:30, если нет end"
-    for(const k of DAY_KEYS){
+    // сортировка и правило "последний блок до 06:30, если end пустой"
+    for (const k of DAY_KEYS) {
         const arr = schedule[k];
         if (!arr.length) continue;
 
-        arr.sort((a,b)=> timeToMinutes(a.start) - timeToMinutes(b.start));
+        arr.sort((a,b) => timeToMinutes(a.start) - timeToMinutes(b.start));
 
         const last = arr[arr.length - 1];
         if (!last.end || last.end.trim() === '') {
@@ -275,8 +275,7 @@ async function renderSchedule(){
         title.textContent = DAY_TITLES[day];
         col.appendChild(title);
 
-        const events = data[day] || [];
-        events.forEach(ev => {
+        (data[day] || []).forEach(ev => {
             const box = document.createElement('div');
             box.className = 'event ' + ev.type;
 
@@ -297,10 +296,15 @@ async function renderSchedule(){
     }
 }
 
-// ==== Логика подсветки и режимов ====
+// ==== Подсветка и режимы ====
 function getTodayKey(){
     const map = {1:'mon',2:'tue',3:'wed',4:'thu',5:'fri'};
     return map[new Date().getDay()] || 'mon';   // выходные -> понедельник
+}
+
+function isTodayWeekend(){
+    const d = new Date().getDay(); // 0=Вс, 6=Сб
+    return d === 0 || d === 6;
 }
 
 function findCurrentEvent(day){
@@ -317,6 +321,10 @@ function findCurrentEvent(day){
         if (m >= s) best = ev;
     }
     return best;
+}
+
+function getFirstEvent(day){
+    return document.querySelector(`.event[data-day="${day}"]`);
 }
 
 function clearHighlight(){
@@ -339,7 +347,7 @@ function isMobile(){
 let currentMode = null;          // 'desktop' | 'mobile'
 let activeMobileDayIndex = 0;
 
-// --- Режим десктоп/планшет ---
+// --- ДЕСКТОП / ПЛАНШЕТ ---
 function applyDesktopMode(){
     currentMode = 'desktop';
 
@@ -348,33 +356,27 @@ function applyDesktopMode(){
         col.classList.remove('active-day');
     });
 
-    const today = getTodayKey();
-    const isWeekend = !["mon","tue","wed","thu","fri"].includes(
-        ["sun","mon","tue","wed","thu","fri","sat"][new Date().getDay()]
-    );
+    clearHighlight();
 
-    let ev;
-
-    if (isWeekend) {
-        // В выходные — просто первый блок понедельника
-        const mondayEvents = document.querySelectorAll('.event[data-day="mon"]');
-        ev = mondayEvents.length > 0 ? mondayEvents[0] : null;
+    let ev = null;
+    if (isTodayWeekend()) {
+        // выходные → первый блок понедельника
+        ev = getFirstEvent('mon');
     } else {
-        // В будни — подсвечиваем текущий блок
-        ev = findCurrentEvent(today);
+        const todayKey = getTodayKey();
+        ev = findCurrentEvent(todayKey);
     }
 
-    highlight(ev);
+    if (ev) highlight(ev);
 }
 
-
-// --- Режим мобильный (один день на экране) ---
+// --- МОБИЛЬНЫЙ (один день на экране) ---
 function applyMobileMode(initial = false){
     currentMode = 'mobile';
 
     if (initial) {
-        const today = getTodayKey();
-        const idx = DAY_KEYS.indexOf(today);
+        const todayKey = getTodayKey();
+        const idx = DAY_KEYS.indexOf(todayKey);
         activeMobileDayIndex = idx >= 0 ? idx : 0;
     }
 
@@ -390,11 +392,19 @@ function applyMobileMode(initial = false){
         }
     });
 
-    const ev = findCurrentEvent(activeKey);
-    highlight(ev);
+    clearHighlight();
+
+    let ev;
+    if (isTodayWeekend() && activeKey === 'mon') {
+        ev = getFirstEvent('mon');      // в выходные в мобильном тоже первый блок понедельника
+    } else {
+        ev = findCurrentEvent(activeKey);
+    }
+
+    if (ev) highlight(ev);
 }
 
-// --- Переключение дней в мобильном режиме ---
+// переключение дня в мобильном режиме
 function setMobileDay(index){
     activeMobileDayIndex = (index + DAY_KEYS.length) % DAY_KEYS.length;
     if (currentMode === 'mobile') {
@@ -402,7 +412,7 @@ function setMobileDay(index){
     }
 }
 
-// --- Обновление режима при загрузке/resize ---
+// обновление режима при загрузке и resize
 function updateLayout(initial = false){
     if (isMobile()) {
         if (initial || currentMode !== 'mobile') {
@@ -423,6 +433,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         await renderSchedule();
         updateLayout(true);
 
+        // мобильная боковая навигация
         const sideNav = document.getElementById('mobileSideNav');
         if (sideNav) {
             sideNav.querySelectorAll('button[data-day-index]')
@@ -436,17 +447,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             const mobileNowBtn = document.getElementById('mobileNowBtn');
             if (mobileNowBtn) {
                 mobileNowBtn.addEventListener('click', () => {
-                    const today = getTodayKey();
-                    const idx = DAY_KEYS.indexOf(today);
+                    const todayKey = getTodayKey();
+                    const idx = DAY_KEYS.indexOf(todayKey);
                     setMobileDay(idx >= 0 ? idx : 0);
                 });
             }
         }
 
+        // кнопка ▶️ на планшете/десктопе – перейти к текущему блоку
         const tabletBtn = document.getElementById('tabletNowBtn');
         if (tabletBtn) {
             tabletBtn.addEventListener('click', () => {
-                // всегда подсвечиваем и скроллим к текущему блоку
                 applyDesktopMode();
             });
         }
@@ -486,4 +497,3 @@ function showUpdateBanner(reg){
 
 </body>
 </html>
-

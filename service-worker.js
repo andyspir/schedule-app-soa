@@ -1,54 +1,79 @@
-const CACHE_NAME = "schedule-soa-v1";
+// === Версия SW (увеличивай при необходимости ручного обновления) ===
+const SW_VERSION = 'v1';
 
-const ASSETS = [
-  "./",
-  "./index.html",
-  "./manifest.json",
-  "./service-worker.js",
-  "./icons/app_icon_192.png",
-  "./icons/app_icon_512.png"
+// === Список статических файлов, которые можно кэшировать ===
+// (только иконки — то, что никогда не меняется)
+const STATIC_ASSETS = [
+  'favicon.ico',
+  'icon-192.png',
+  'icon-512.png',
+  'manifest.json'
 ];
 
-// Установка SW
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
-  );
+self.addEventListener('install', event => {
+  // Пропускаем стадию waiting — сразу активируемся
   self.skipWaiting();
+  event.waitUntil(
+    caches.open(SW_VERSION).then(cache => {
+      return cache.addAll(STATIC_ASSETS);
+    })
+  );
 });
 
-// Активация
-self.addEventListener("activate", (event) => {
+// Удаляем старые кэши, если они есть
+self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.map((k) => k !== CACHE_NAME && caches.delete(k)))
+    caches.keys().then(keys =>
+      Promise.all(
+        keys
+          .filter(key => key !== SW_VERSION)
+          .map(key => caches.delete(key))
+      )
     )
   );
-  self.clients.claim();
+  self.clients.claim(); // SW начинает управлять страницей сразу
 });
 
-// Обработка запросов
-self.addEventListener("fetch", (event) => {
-  const url = new URL(event.request.url);
+// Основная логика fetch
+self.addEventListener('fetch', event => {
+  const request = event.request;
 
-  // НЕ кэшируем запросы к Google Sheets
-  if (url.hostname.includes("googleusercontent.com") ||
-      url.hostname.includes("docs.google.com")) {
-    return; // прямой fetch без SW
+  // === 1) НЕ кэшируем index.html и прочие страницы ===
+  if (request.mode === 'navigate') {
+    return event.respondWith(fetch(request));
   }
 
+  const url = new URL(request.url);
+
+  // === 2) НЕ кэшируем JS/CSS/HTML/Google Sheets ===
+  if (
+    url.pathname.endsWith('.html') ||
+    url.pathname.endsWith('.js') ||
+    url.pathname.endsWith('.css') ||
+    url.host.includes('docs.google.com')
+  ) {
+    return event.respondWith(fetch(request));
+  }
+
+  // === 3) Другие запросы делаем по стратегии cache-first ===
   event.respondWith(
-    caches.match(event.request).then(
-      (cached) =>
+    caches.match(request).then(cached => {
+      return (
         cached ||
-        fetch(event.request).catch(() => cached)
-    )
+        fetch(request).then(response => {
+          return caches.open(SW_VERSION).then(cache => {
+            cache.put(request, response.clone());
+            return response;
+          });
+        })
+      );
+    })
   );
 });
 
-// Обновление
-self.addEventListener("message", (event) => {
-  if (event.data === "SKIP_WAITING") {
+// Поддержка принудительного обновления
+self.addEventListener('message', event => {
+  if (event.data === 'SKIP_WAITING') {
     self.skipWaiting();
   }
 });

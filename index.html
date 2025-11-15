@@ -1,201 +1,201 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#ffffff">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Адаптивное расписание недели</title>
-<style>
-/* Фиксированный заголовок дня на смартфонах */
-@media (max-width: 599px) {
-    .day-title {
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        background: #ffffff;
-        padding: 10px 0 8px 0;
-        margin: 0 -8px 8px -8px;
-        border-bottom: 1px solid #dcdcdc;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-        text-align: center;
-    }
-}
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ffffff">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Адаптивное расписание недели</title>
+  <style>
+  /* Фиксированный заголовок дня на смартфонах */
+  @media (max-width: 599px) {
+      .day-title {
+          position: sticky;
+          top: 0;
+          z-index: 1000;
+          background: #ffffff;
+          padding: 10px 0 8px 0;
+          margin: 0 -8px 8px -8px;
+          border-bottom: 1px solid #dcdcdc;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+          text-align: center;
+      }
+  }
 
-html {
-    scroll-behavior: smooth;
-}
-body {
-    font-family: Arial, sans-serif;
-    background: #fafafa;
-    margin: 20px;
-}
+  html {
+      scroll-behavior: smooth;
+  }
+  body {
+      font-family: Arial, sans-serif;
+      background: #fafafa;
+      margin: 20px;
+  }
 
-.week-container {
-    max-width: 1500px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
-}
+  .week-container {
+      max-width: 1500px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+  }
 
-.day-column {
-    border: 1px solid #333;
-    border-radius: 10px;
-    background: #ffffff;
-    padding: 10px 8px 12px 8px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-}
+  .day-column {
+      border: 1px solid #333;
+      border-radius: 10px;
+      background: #ffffff;
+      padding: 10px 8px 12px 8px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+  }
 
-.day-title {
-    text-align: center;
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 8px;
-}
+  .day-title {
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 8px;
+  }
 
-.event {
-    display: grid;
-    grid-template-columns: 56px auto 60px; /* время | текст | длительность */
-    padding: 6px 6px;
-    border-radius: 8px;
-    margin-bottom: 4px;
-    border: 1px solid #ccc;
-    line-height: 1.3;
-    align-items: center;
-    box-sizing: border-box;
-    transition: background 0.25s, box-shadow 0.25s, border 0.25s;
-    font-size: 12px;
-}
-.time {
-    font-size: 11px;
-    font-weight: bold;
-    color: #333;
-}
-.text {
-    font-size: 11px;
-    white-space: normal;
-    overflow-wrap: break-word;
-    padding-right: 4px;
-}
-.duration {
-    text-align: right;
-    font-size: 11px;
-    font-weight: bold;
-    color: #444;
-}
+  .event {
+      display: grid;
+      grid-template-columns: 56px auto 60px; /* время | текст | длительность */
+      padding: 6px 6px;
+      border-radius: 8px;
+      margin-bottom: 4px;
+      border: 1px solid #ccc;
+      line-height: 1.3;
+      align-items: center;
+      box-sizing: border-box;
+      transition: background 0.25s, box-shadow 0.25s, border 0.25s;
+      font-size: 12px;
+  }
+  .time {
+      font-size: 11px;
+      font-weight: bold;
+      color: #333;
+  }
+  .text {
+      font-size: 11px;
+      white-space: normal;
+      overflow-wrap: break-word;
+      padding-right: 4px;
+  }
+  .duration {
+      text-align: right;
+      font-size: 11px;
+      font-weight: bold;
+      color: #444;
+  }
 
-/* Цветовое кодирование */
-.school     { background: #cce6ff; }
-.music      { background: #ffe6cc; }
-.homework   { background: #e6ffcc; }
-.uchiru     { background: #e6ccff; }
-.prep-music { background: #ffcccc; }
-.default    { background: #f2f2f2; }
+  /* Цветовое кодирование */
+  .school     { background: #cce6ff; }
+  .music      { background: #ffe6cc; }
+  .homework   { background: #e6ffcc; }
+  .uchiru     { background: #e6ccff; }
+  .prep-music { background: #ffcccc; }
+  .default    { background: #f2f2f2; }
 
-/* Подсветка текущего блока */
-.highlight {
-    border: 2px solid #ffae42 !important;
-    background-color: #fff8e6 !important;
-    box-shadow: 0 0 10px 3px rgba(255, 180, 80, 0.85) !important;
-}
+  /* Подсветка текущего блока */
+  .highlight {
+      border: 2px solid #ffae42 !important;
+      background-color: #fff8e6 !important;
+      box-shadow: 0 0 10px 3px rgba(255, 180, 80, 0.85) !important;
+  }
 
-/* Кнопка "сейчас" для планшета (фиксированная) */
-#tabletNowBtn {
-    display: none;
-    position: fixed;
-    right: 12px;
-    top: 12px;
-    z-index: 1100;
-    border: 1px solid #ccc;
-    border-radius: 18px;
-    padding: 6px 14px;
-    font-size: 18px;
-    background: #ffffff;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-    cursor: pointer;
-}
-#tabletNowBtn:active {
-    transform: translateY(1px);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-}
+  /* Кнопка "сейчас" для планшета (фиксированная) */
+  #tabletNowBtn {
+      display: none;
+      position: fixed;
+      right: 12px;
+      top: 12px;
+      z-index: 1100;
+      border: 1px solid #ccc;
+      border-radius: 18px;
+      padding: 6px 14px;
+      font-size: 18px;
+      background: #ffffff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+      cursor: pointer;
+  }
+  #tabletNowBtn:active {
+      transform: translateY(1px);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
 
-/* Вертикальная навигация дней для мобильного (справа) */
-.mobile-side-nav {
-    display: none;
-    position: fixed;
-    right: 4px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 1200;
-    flex-direction: column;
-    gap: 4px;
-    align-items: flex-end;
-}
-.mobile-side-nav button {
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 4px 6px;
-    font-size: 11px;
-    background: #ffffff;
-    cursor: pointer;
-    min-width: 32px;
-    text-align: center;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-}
-.mobile-side-nav button:active {
-    transform: translateY(1px);
-    box-shadow: 0 0 2px rgba(0,0,0,0.2);
-}
-.mobile-side-nav button.active-day-btn {
-    font-weight: bold;
-    border-color: #ffae42;
-}
+  /* Вертикальная навигация дней для мобильного (справа) */
+  .mobile-side-nav {
+      display: none;
+      position: fixed;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1200;
+      flex-direction: column;
+      gap: 4px;
+      align-items: flex-end;
+  }
+  .mobile-side-nav button {
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 4px 6px;
+      font-size: 11px;
+      background: #ffffff;
+      cursor: pointer;
+      min-width: 32px;
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+  .mobile-side-nav button:active {
+      transform: translateY(1px);
+      box-shadow: 0 0 2px rgba(0,0,0,0.2);
+  }
+  .mobile-side-nav button.active-day-btn {
+      font-weight: bold;
+      border-color: #ffae42;
+  }
 
-/* Адаптив: планшеты и телефоны */
-@media (max-width: 1199px) {
-    .week-container {
-        grid-template-columns: repeat(3, 1fr);
-    }
-    /* показываем кнопку ▶️ только на планшетах (600–1199) */
-    @media (min-width: 600px) {
-        #tabletNowBtn {
-            display: block;
-        }
-    }
-}
+  /* Адаптив: планшеты и телефоны */
+  @media (max-width: 1199px) {
+      .week-container {
+          grid-template-columns: repeat(3, 1fr);
+      }
+      /* показываем кнопку ▶️ только на планшетах (600–1199) */
+      @media (min-width: 600px) {
+          #tabletNowBtn {
+              display: block;
+          }
+      }
+  }
 
-@media (max-width: 899px) {
-    .week-container {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
+  @media (max-width: 899px) {
+      .week-container {
+          grid-template-columns: repeat(2, 1fr);
+      }
+  }
 
-@media (max-width: 599px) {
-    body {
-        margin: 10px;
-    }
-    .week-container {
-        grid-template-columns: 1fr;
-    }
-    .day-column {
-        display: none; /* по умолчанию все скрыты, показываем только активный через JS */
-    }
-    .day-column.active-day {
-        display: flex;
-    }
-    /* вертикальная навигация справа включается только на мобильных */
-    .mobile-side-nav {
-        display: flex;
-    }
-    /* на мобильных планшетная кнопка не нужна */
-    #tabletNowBtn {
-        display: none !important;
-    }
-}
-</style>
+  @media (max-width: 599px) {
+      body {
+          margin: 10px;
+      }
+      .week-container {
+          grid-template-columns: 1fr;
+      }
+      .day-column {
+          display: none; /* по умолчанию все скрыты, показываем только активный через JS */
+      }
+      .day-column.active-day {
+          display: flex;
+      }
+      /* вертикальная навигация справа включается только на мобильных */
+      .mobile-side-nav {
+          display: flex;
+      }
+      /* на мобильных планшетная кнопка не нужна */
+      #tabletNowBtn {
+          display: none !important;
+      }
+  }
+  </style>
 </head>
 <body>
 
@@ -204,16 +204,16 @@ body {
 
 <!-- Вертикальная навигация для смартфона -->
 <div class="mobile-side-nav" id="mobileSideNav">
-    <button data-day-index="0">ПН</button>
-    <button data-day-index="1">ВТ</button>
-    <button data-day-index="2">СР</button>
-    <button data-day-index="3">ЧТ</button>
-    <button data-day-index="4">ПТ</button>
-    <button id="mobileNowBtn">▶️</button>
+  <button data-day-index="0">ПН</button>
+  <button data-day-index="1">ВТ</button>
+  <button data-day-index="2">СР</button>
+  <button data-day-index="3">ЧТ</button>
+  <button data-day-index="4">ПТ</button>
+  <button id="mobileNowBtn">▶️</button>
 </div>
 
 <div class="week-container" id="weekContainer">
-    <!-- Деньки и события будут сгенерированы динамически из Google Sheets -->
+  <!-- Дни и события будут сгенерированы динамически -->
 </div>
 
 <!-- Баннер обновления приложения -->
@@ -227,381 +227,417 @@ body {
     text-align: center;
     font-size: 14px;
     z-index: 3000;
+    display: none;
 ">
-    Доступна новая версия приложения.
-    <button id="updateBtn" style="
-        margin-left: 10px;
-        padding: 4px 10px;
-        font-size: 13px;
-        background: #ffae42;
-        color: #000;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-    ">Обновить</button>
+  Доступна новая версия приложения.
+  <button id="updateBtn" style="
+      margin-left: 10px;
+      padding: 4px 10px;
+      font-size: 13px;
+      background: #ffae42;
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+  ">Обновить</button>
 </div>
 
-
-<script>
 <script>
 // === Конфигурация ===
-const SHEET_JSON_URL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTYBAcXFTIcphfEyjNyTszMEGJxuhTHoGZC-6nL7aLjokDPKGgLHRCWvLTBfK2Pu9wUohRstIk9Rxg7/gviz/tq?tqx=out:json&gid=0";
+// Публикация из Google Sheets, преобразованная в CSV
+// (pubhtml → pub? ... &output=csv)
+const SHEET_CSV_URL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTYBAcXFTIcphfEyjNyTszMEGJxuhTHoGZC-6nL7aLjokDPKGgLHRCWvLTBfK2Pu9wUohRstIk9Rxg7/pub?gid=0&single=true&output=csv";
 
-const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri'];
+const DAY_KEYS = ["mon", "tue", "wed", "thu", "fri"];
 const DAY_TITLES = {
-    mon: 'Понедельник',
-    tue: 'Вторник',
-    wed: 'Среда',
-    thu: 'Четверг',
-    fri: 'Пятница'
+  mon: "Понедельник",
+  tue: "Вторник",
+  wed: "Среда",
+  thu: "Четверг",
+  fri: "Пятница"
 };
-
 
 // === Вспомогательные функции времени и длительности ===
 function timeToMinutes(str) {
-    const [h, m] = str.split(':').map(Number);
-    return h * 60 + m;
+  const [h, m] = str.split(":").map(Number);
+  return h * 60 + m;
 }
 
 function formatDurationStr(startStr, endStr) {
-    const start = timeToMinutes(startStr);
-    const end = timeToMinutes(endStr);
-    let diff = end - start;
-    if (diff < 0) diff += 24 * 60; // на всякий случай
+  const start = timeToMinutes(startStr);
+  const end = timeToMinutes(endStr);
+  let diff = end - start;
+  if (diff < 0) diff += 24 * 60;
 
-    const hours = Math.floor(diff / 60);
-    const mins = diff % 60;
-    const parts = [];
-    if (hours > 0) parts.push(hours + ' ч');
-    if (mins > 0) parts.push(mins + ' мин');
-    if (!parts.length) parts.push('0 мин');
-    return parts.join(' ');
+  const hours = Math.floor(diff / 60);
+  const mins = diff % 60;
+  const parts = [];
+  if (hours > 0) parts.push(hours + " ч");
+  if (mins > 0) parts.push(mins + " мин");
+  if (!parts.length) parts.push("0 мин");
+  return parts.join(" ");
 }
 
-// === Загрузка расписания из Google Sheets ===
-async function loadScheduleFromGoogle() {
-    const response = await fetch(SHEET_JSON_URL);
-    const text = await response.text();
+// Простой парсер строки CSV с учётом кавычек
+function splitCSVLine(line) {
+  const result = [];
+  let current = "";
+  let inQuotes = false;
 
-    // gviz/tq возвращает JSONP, нужно вырезать чистый JSON
-    const json = JSON.parse(text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1));
-    const rows = json.table.rows;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
 
-    // Структура: day_key | time_start | time_end | text | type
-    const schedule = {
-        mon: [],
-        tue: [],
-        wed: [],
-        thu: [],
-        fri: []
-    };
-
-    rows.forEach(r => {
-        if (!r.c) return;
-        const day_key    = r.c[0]?.v;
-        const time_start = r.c[1]?.v;
-        const time_end   = r.c[2]?.v;
-        const text       = r.c[3]?.v || '';
-        const type       = r.c[4]?.v || 'default';
-
-        if (!day_key || !time_start || !time_end) return;
-        if (!(day_key in schedule)) return;
-
-        schedule[day_key].push({
-            day: day_key,
-            start: time_start,
-            end: time_end,
-            text,
-            type
-        });
-    });
-
-    // Автосортировка по времени внутри каждого дня
-    for (const key of DAY_KEYS) {
-        schedule[key].sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
+    if (ch === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        // экранированная кавычка ""
+        current += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (ch === "," && !inQuotes) {
+      result.push(current);
+      current = "";
+    } else {
+      current += ch;
     }
+  }
+  result.push(current);
+  return result.map(v => v.trim().replace(/^"|"$/g, ""));
+}
 
-    return schedule;
+// === Загрузка расписания из Google Sheets (CSV) ===
+async function loadScheduleFromGoogle() {
+  const response = await fetch(SHEET_CSV_URL);
+  const csv = await response.text();
+
+  const lines = csv
+    .split(/\r?\n/)
+    .map(l => l.trim())
+    .filter(l => l.length > 0);
+
+  if (lines.length < 2) {
+    return { mon: [], tue: [], wed: [], thu: [], fri: [] };
+  }
+
+  const header = splitCSVLine(lines[0]);
+  const idxDay   = header.indexOf("day_key");
+  const idxStart = header.indexOf("time_start");
+  const idxEnd   = header.indexOf("time_end");
+  const idxText  = header.indexOf("text");
+  const idxType  = header.indexOf("type");
+
+  const schedule = { mon: [], tue: [], wed: [], thu: [], fri: [] };
+
+  for (let i = 1; i < lines.length; i++) {
+    const cols = splitCSVLine(lines[i]);
+    const day_key    = cols[idxDay]   || "";
+    const time_start = cols[idxStart] || "";
+    const time_end   = cols[idxEnd]   || "";
+    const text       = cols[idxText]  || "";
+    const type       = cols[idxType]  || "default";
+
+    if (!day_key || !time_start || !time_end) continue;
+    if (!schedule[day_key]) continue;
+
+    schedule[day_key].push({
+      day: day_key,
+      start: time_start,
+      end: time_end,
+      text,
+      type
+    });
+  }
+
+  // Автосортировка по времени внутри каждого дня
+  for (const key of DAY_KEYS) {
+    schedule[key].sort(
+      (a, b) => timeToMinutes(a.start) - timeToMinutes(b.start)
+    );
+  }
+
+  return schedule;
 }
 
 // === Рендер расписания в DOM ===
 async function renderSchedule() {
-    const schedule = await loadScheduleFromGoogle();
-    const container = document.getElementById('weekContainer');
-    container.innerHTML = '';
+  const schedule = await loadScheduleFromGoogle();
+  const container = document.getElementById("weekContainer");
+  container.innerHTML = "";
 
-    for (const dayKey of DAY_KEYS) {
-        const dayColumn = document.createElement('div');
-        dayColumn.className = 'day-column';
-        dayColumn.id = dayKey;
+  for (const dayKey of DAY_KEYS) {
+    const dayColumn = document.createElement("div");
+    dayColumn.className = "day-column";
+    dayColumn.id = dayKey;
 
-        const title = document.createElement('div');
-        title.className = 'day-title';
-        title.textContent = DAY_TITLES[dayKey] || dayKey;
-        dayColumn.appendChild(title);
+    const title = document.createElement("div");
+    title.className = "day-title";
+    title.textContent = DAY_TITLES[dayKey] || dayKey;
+    dayColumn.appendChild(title);
 
-        const events = schedule[dayKey] || [];
-        events.forEach(ev => {
-            const evDiv = document.createElement('div');
-            evDiv.className = 'event ' + (ev.type || 'default');
-            evDiv.dataset.day = dayKey;
-            evDiv.dataset.start = ev.start;
-            evDiv.dataset.end = ev.end;
+    const events = schedule[dayKey] || [];
+    events.forEach(ev => {
+      const evDiv = document.createElement("div");
+      evDiv.className = "event " + (ev.type || "default");
+      evDiv.dataset.day = dayKey;
+      evDiv.dataset.start = ev.start;
+      evDiv.dataset.end = ev.end;
 
-            const timeDiv = document.createElement('div');
-            timeDiv.className = 'time';
-            timeDiv.textContent = ev.start;
+      const timeDiv = document.createElement("div");
+      timeDiv.className = "time";
+      timeDiv.textContent = ev.start;
 
-            const textDiv = document.createElement('div');
-            textDiv.className = 'text';
-            textDiv.textContent = ev.text;
+      const textDiv = document.createElement("div");
+      textDiv.className = "text";
+      textDiv.textContent = ev.text;
 
-            const durDiv = document.createElement('div');
-            durDiv.className = 'duration';
-            durDiv.textContent = formatDurationStr(ev.start, ev.end);
+      const durDiv = document.createElement("div");
+      durDiv.className = "duration";
+      durDiv.textContent = formatDurationStr(ev.start, ev.end);
 
-            evDiv.appendChild(timeDiv);
-            evDiv.appendChild(textDiv);
-            evDiv.appendChild(durDiv);
+      evDiv.appendChild(timeDiv);
+      evDiv.appendChild(textDiv);
+      evDiv.appendChild(durDiv);
 
-            dayColumn.appendChild(evDiv);
-        });
+      dayColumn.appendChild(evDiv);
+    });
 
-        container.appendChild(dayColumn);
-    }
+    container.appendChild(dayColumn);
+  }
 }
 
 // === Логика подсветки и навигации ===
 function getTodayKey() {
-    const now = new Date();
-    const weekday = now.getDay(); // 0=Sun,1=Mon,...,6=Sat
-    const map = { 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri' };
-    return map[weekday] || null;
+  const now = new Date();
+  const weekday = now.getDay(); // 0=Sun,1=Mon,...,6=Sat
+  const map = { 1: "mon", 2: "tue", 3: "wed", 4: "thu", 5: "fri" };
+  return map[weekday] || null;
 }
 
 function findCurrentEventForDay(dayKey) {
-    const now = new Date();
-    const nowMin = now.getHours() * 60 + now.getMinutes();
-    const events = Array.from(document.querySelectorAll('.event[data-day="' + dayKey + '"]'));
-    if (!events.length) return null;
+  const now = new Date();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  const events = Array.from(
+    document.querySelectorAll('.event[data-day="' + dayKey + '"]')
+  );
+  if (!events.length) return null;
 
-    let exact = null;
-    let lastBefore = null;
+  let exact = null;
+  let lastBefore = null;
 
-    for (const ev of events) {
-        const start = timeToMinutes(ev.dataset.start);
-        const end = timeToMinutes(ev.dataset.end);
+  for (const ev of events) {
+    const start = timeToMinutes(ev.dataset.start);
+    const end = timeToMinutes(ev.dataset.end);
 
-        if (nowMin >= start && nowMin < end) {
-            exact = ev;
-            break;
-        }
-        if (nowMin >= start) lastBefore = ev;
+    if (nowMin >= start && nowMin < end) {
+      exact = ev;
+      break;
     }
+    if (nowMin >= start) lastBefore = ev;
+  }
 
-    return exact || lastBefore || events[0];
+  return exact || lastBefore || events[0];
 }
 
 function clearHighlight() {
-    document.querySelectorAll('.event.highlight')
-        .forEach(el => el.classList.remove('highlight'));
+  document
+    .querySelectorAll(".event.highlight")
+    .forEach(el => el.classList.remove("highlight"));
 }
 
 function highlightAndScroll(ev) {
-    if (!ev) return;
-    clearHighlight();
-    ev.classList.add('highlight');
-    ev.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  if (!ev) return;
+  clearHighlight();
+  ev.classList.add("highlight");
+  ev.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
 function isMobile() {
-    return window.innerWidth < 600;
+  return window.innerWidth < 600;
 }
 
 let activeDayIndex = 0;
 let lastIsMobile = null;
 
 function showAllDaysDesktopTablet() {
-    document.querySelectorAll('.day-column').forEach(col => {
-        col.classList.remove('active-day');
-        col.style.display = 'flex';
-    });
+  document.querySelectorAll(".day-column").forEach(col => {
+    col.classList.remove("active-day");
+    col.style.display = "flex";
+  });
 }
 
 function setActiveDayForMobile(index) {
-    activeDayIndex = (index + DAY_KEYS.length) % DAY_KEYS.length;
-    const activeKey = DAY_KEYS[activeDayIndex];
+  activeDayIndex = (index + DAY_KEYS.length) % DAY_KEYS.length;
+  const activeKey = DAY_KEYS[activeDayIndex];
 
-    document.querySelectorAll('.day-column').forEach(col => {
-        if (col.id === activeKey) {
-            col.classList.add('active-day');
-            col.style.display = 'flex';
-        } else {
-            col.classList.remove('active-day');
-            col.style.display = 'none';
-        }
-    });
-
-    // обновляем подсветку активной кнопки справа
-    const sideButtons = document.querySelectorAll('.mobile-side-nav button[data-day-index]');
-    sideButtons.forEach(btn => {
-        btn.classList.toggle('active-day-btn', parseInt(btn.dataset.dayIndex, 10) === activeDayIndex);
-    });
-
-    // при переключении дня прокручиваем к началу
-    window.scrollTo({ top: 0 });
-
-    // если это сегодняшний день — подсветить текущий блок
-    const todayKey = getTodayKey();
-    if (todayKey && todayKey === activeKey) {
-        const ev = findCurrentEventForDay(activeKey);
-        if (ev) highlightAndScroll(ev);
+  document.querySelectorAll(".day-column").forEach(col => {
+    if (col.id === activeKey) {
+      col.classList.add("active-day");
+      col.style.display = "flex";
     } else {
-        clearHighlight();
+      col.classList.remove("active-day");
+      col.style.display = "none";
     }
+  });
+
+  // обновляем подсветку активной кнопки справа
+  const sideButtons = document.querySelectorAll(
+    ".mobile-side-nav button[data-day-index]"
+  );
+  sideButtons.forEach(btn => {
+    btn.classList.toggle(
+      "active-day-btn",
+      parseInt(btn.dataset.dayIndex, 10) === activeDayIndex
+    );
+  });
+
+  // при переключении дня прокручиваем к началу
+  window.scrollTo({ top: 0 });
+
+  // если это сегодняшний день — подсветить текущий блок
+  const todayKey = getTodayKey();
+  if (todayKey && todayKey === activeKey) {
+    const ev = findCurrentEventForDay(activeKey);
+    if (ev) highlightAndScroll(ev);
+  } else {
+    clearHighlight();
+  }
 }
 
 function highlightTodayDesktopOrTablet() {
-    const todayKey = getTodayKey();
-    if (!todayKey) return;
-    const ev = findCurrentEventForDay(todayKey);
-    if (ev) highlightAndScroll(ev);
+  const todayKey = getTodayKey();
+  if (!todayKey) return;
+  const ev = findCurrentEventForDay(todayKey);
+  if (ev) highlightAndScroll(ev);
 }
 
 function handleResize() {
-    const mobileNow = isMobile();
-    if (mobileNow === lastIsMobile) return; // режим не поменялся
+  const mobileNow = isMobile();
+  if (mobileNow === lastIsMobile) return;
 
-    lastIsMobile = mobileNow;
+  lastIsMobile = mobileNow;
 
-    if (mobileNow) {
-        // переход в мобильный режим
-        const todayKey = getTodayKey();
-        let idx = 0;
-        if (todayKey) {
-            const found = DAY_KEYS.indexOf(todayKey);
-            if (found >= 0) idx = found;
-        }
-        setActiveDayForMobile(idx);
-    } else {
-        // планшет/десктоп
-        showAllDaysDesktopTablet();
-        clearHighlight();
-        highlightTodayDesktopOrTablet();
+  if (mobileNow) {
+    const todayKey = getTodayKey();
+    let idx = 0;
+    if (todayKey) {
+      const found = DAY_KEYS.indexOf(todayKey);
+      if (found >= 0) idx = found;
     }
+    setActiveDayForMobile(idx);
+  } else {
+    showAllDaysDesktopTablet();
+    clearHighlight();
+    highlightTodayDesktopOrTablet();
+  }
 }
 
 function initInteractions() {
-    lastIsMobile = isMobile();
+  lastIsMobile = isMobile();
 
-    if (lastIsMobile) {
+  if (lastIsMobile) {
+    const todayKey = getTodayKey();
+    let idx = 0;
+    if (todayKey) {
+      const found = DAY_KEYS.indexOf(todayKey);
+      if (found >= 0) idx = found;
+    }
+    setActiveDayForMobile(idx);
+  } else {
+    showAllDaysDesktopTablet();
+    highlightTodayDesktopOrTablet();
+  }
+
+  // Кнопка планшета ▶️
+  const tabletBtn = document.getElementById("tabletNowBtn");
+  if (tabletBtn) {
+    tabletBtn.addEventListener("click", () => {
+      if (!isMobile()) {
+        highlightTodayDesktopOrTablet();
+      }
+    });
+  }
+
+  // Мобильная вертикальная навигация
+  const sideNav = document.getElementById("mobileSideNav");
+  if (sideNav) {
+    const dayButtons = sideNav.querySelectorAll("button[data-day-index]");
+    dayButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (isMobile()) {
+          const idx = parseInt(btn.dataset.dayIndex, 10);
+          setActiveDayForMobile(idx);
+        }
+      });
+    });
+
+    const mobileNowBtn = document.getElementById("mobileNowBtn");
+    if (mobileNowBtn) {
+      mobileNowBtn.addEventListener("click", () => {
+        if (!isMobile()) return;
         const todayKey = getTodayKey();
         let idx = 0;
         if (todayKey) {
-            const found = DAY_KEYS.indexOf(todayKey);
-            if (found >= 0) idx = found;
+          const found = DAY_KEYS.indexOf(todayKey);
+          if (found >= 0) idx = found;
         }
         setActiveDayForMobile(idx);
-    } else {
-        showAllDaysDesktopTablet();
-        highlightTodayDesktopOrTablet();
+      });
     }
+  }
 
-    // Кнопка планшета ▶️
-    const tabletBtn = document.getElementById('tabletNowBtn');
-    if (tabletBtn) {
-        tabletBtn.addEventListener('click', () => {
-            if (!isMobile()) {
-                highlightTodayDesktopOrTablet();
-            }
-        });
-    }
-
-    // Мобильная вертикальная навигация
-    const sideNav = document.getElementById('mobileSideNav');
-    if (sideNav) {
-        const dayButtons = sideNav.querySelectorAll('button[data-day-index]');
-        dayButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                if (isMobile()) {
-                    const idx = parseInt(btn.dataset.dayIndex, 10);
-                    setActiveDayForMobile(idx);
-                }
-            });
-        });
-
-        const mobileNowBtn = document.getElementById('mobileNowBtn');
-        if (mobileNowBtn) {
-            mobileNowBtn.addEventListener('click', () => {
-                if (!isMobile()) return;
-                const todayKey = getTodayKey();
-                let idx = 0;
-                if (todayKey) {
-                    const found = DAY_KEYS.indexOf(todayKey);
-                    if (found >= 0) idx = found;
-                }
-                setActiveDayForMobile(idx);
-            });
-        }
-    }
-
-    window.addEventListener('resize', handleResize);
+  window.addEventListener("resize", handleResize);
 }
 
 // Инициализация: сначала загружаем и рендерим расписание, затем включаем логику
-document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        await renderSchedule();
-        initInteractions();
-    } catch (e) {
-        console.error('Ошибка при загрузке расписания из Google Sheets', e);
-    }
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    await renderSchedule();
+    initInteractions();
+  } catch (e) {
+    console.error("Ошибка при загрузке расписания из Google Sheets", e);
+  }
 });
 </script>
 
 <script>
 // Регистрация Service Worker + показ баннера обновления
 if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("./service-worker.js").then((reg) => {
+  navigator.serviceWorker.register("./service-worker.js").then((reg) => {
 
-        if (reg.waiting) {
-            showUpdateBanner(reg);
-            return;
+    if (reg.waiting) {
+      showUpdateBanner(reg);
+      return;
+    }
+
+    reg.addEventListener("updatefound", () => {
+      const newWorker = reg.installing;
+      newWorker.addEventListener("statechange", () => {
+        if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+          showUpdateBanner(reg);
         }
-
-        reg.addEventListener("updatefound", () => {
-            const newWorker = reg.installing;
-            newWorker.addEventListener("statechange", () => {
-                if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-                    showUpdateBanner(reg);
-                }
-            });
-        });
+      });
     });
+  });
 }
 
 function showUpdateBanner(reg) {
-    const banner = document.getElementById("updateBanner");
-    banner.style.display = "block";
+  const banner = document.getElementById("updateBanner");
+  if (!banner) return;
+  banner.style.display = "block";
 
-    document.getElementById("updateBtn").onclick = () => {
-        if (reg.waiting) {
-            reg.waiting.postMessage("SKIP_WAITING");
-        }
-        window.location.reload(true);
-    };
+  const btn = document.getElementById("updateBtn");
+  if (!btn) return;
+
+  btn.onclick = () => {
+    if (reg.waiting) {
+      reg.waiting.postMessage("SKIP_WAITING");
+    }
+    window.location.reload(true);
+  };
 }
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-

@@ -537,6 +537,65 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./service-worker.js');
 }
 </script>
+<div id="updateBanner" style="
+    display:none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    font-size: 14px;
+    z-index: 3000;
+">
+    Доступна новая версия приложения.
+    <button id="updateBtn" style="
+        margin-left: 10px;
+        padding: 4px 10px;
+        font-size: 13px;
+        background: #ffae42;
+        color: #000;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    ">Обновить</button>
+</div>
+<script>
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("./service-worker.js").then((reg) => {
+
+        // Если новая версия уже ждёт активации
+        if (reg.waiting) {
+            showUpdateBanner(reg);
+            return;
+        }
+
+        // Если новая версия загружена — показать баннер
+        reg.addEventListener("updatefound", () => {
+            const newWorker = reg.installing;
+            newWorker.addEventListener("statechange", () => {
+                if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+                    showUpdateBanner(reg);
+                }
+            });
+        });
+    });
+}
+
+function showUpdateBanner(reg) {
+    const banner = document.getElementById("updateBanner");
+    banner.style.display = "block";
+
+    document.getElementById("updateBtn").onclick = () => {
+        reg.waiting.postMessage("SKIP_WAITING");
+        window.location.reload(true);
+    };
+}
+</script>
 
 </body>
 </html>
+

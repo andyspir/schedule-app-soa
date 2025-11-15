@@ -200,8 +200,12 @@ async function loadSchedule(){
     if(schedule[day]) schedule[day].push({day,start,end,text,type});
   }
 
-  for(const k of DAY_KEYS) schedule[k].sort((a,b)=> timeToMinutes(a.start)-timeToMinutes(b.start));
-    // === Автоматическая логика для последнего блока ===
+// Сортировка внутри каждого дня
+for (const k of DAY_KEYS) {
+    schedule[k].sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
+}
+
+// === Автоматическая логика для последнего блока ===
 for (const k of DAY_KEYS) {
     const dayEvents = schedule[k];
     if (dayEvents.length === 0) continue;
@@ -210,11 +214,12 @@ for (const k of DAY_KEYS) {
 
     // Если время окончания пустое — задаём окончание = 06:30 следующего дня
     if (!last.end || last.end.trim() === "") {
-        last.end = "06:30";  // фиксированное окончание следующего дня
+        last.end = "06:30"; // фиксированное окончание следующего дня
     }
 }
 
-  return schedule;
+return schedule;
+
 }
 
 async function render(){
@@ -377,6 +382,7 @@ function showUpdate(reg){
 
 </body>
 </html>
+
 
 
 

@@ -1,10 +1,10 @@
-const CACHE_NAME = "schedule-app-v1";
+const CACHE_NAME = "schedule-soa-v1";
 const urlsToCache = [
   "./",
   "./index.html",
   "./manifest.json",
-  "./icons/icon-192.png",
-  "./icons/icon-512.png"
+  "./icons/app_icon_192.png",
+  "./icons/app_icon_512.png"
 ];
 
 // Установка Service Worker
@@ -36,7 +36,6 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        // Если получили ответ — обновляем кэш
         const clone = response.clone();
         caches.open(CACHE_NAME).then((cache) => {
           cache.put(event.request, clone);
@@ -47,7 +46,7 @@ self.addEventListener("fetch", (event) => {
   );
 });
 
-// Отслеживание обновлений Service Worker
+// Сообщение от страницы: SKIP_WAITING для мгновенного обновления
 self.addEventListener("message", (event) => {
   if (event.data === "SKIP_WAITING") {
     self.skipWaiting();

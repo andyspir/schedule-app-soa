@@ -125,8 +125,12 @@ body {
 /* адаптивность */
 @media (max-width: 1199px) {
     .week-container { grid-template-columns: repeat(3, 1fr); }
-    @media (min-width: 600px) { #tabletNowBtn { display: block; } }
 }
+
+@media (min-width: 600px) and (max-width: 1199px) {
+    #tabletNowBtn { display: block; }
+}
+
 @media (max-width: 899px) { .week-container { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 599px) {
     body { margin: 10px; }
@@ -360,6 +364,7 @@ function showUpdate(reg){
 
 </body>
 </html>
+
 
 
 

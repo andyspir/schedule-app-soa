@@ -287,16 +287,40 @@ function setMobileDay(i){
 document.addEventListener("DOMContentLoaded", async ()=>{
   await render();
 
-  if(isMobile()){
+  // начальный выбор дня на мобильном
+  if (isMobile()) {
     const today = getTodayKey();
     let idx = DAY_KEYS.indexOf(today);
-    if(idx<0) idx=0;
+    if (idx < 0) idx = 0;
     setMobileDay(idx);
   }
 
-  window.addEventListener("resize",()=>{
-    if(!isMobile()){
-      document.querySelectorAll(".day-column").forEach(c=>c.style.display="flex");
+  // обработчики кнопок боковой навигации на смартфоне
+  const sideNav = document.getElementById("mobileSideNav");
+  if (sideNav) {
+    const dayButtons = sideNav.querySelectorAll("button[data-day-index]");
+    dayButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const idx = parseInt(btn.dataset.dayIndex, 10);
+        setMobileDay(idx);
+      });
+    });
+
+    const mobileNowBtn = document.getElementById("mobileNowBtn");
+    if (mobileNowBtn) {
+      mobileNowBtn.addEventListener("click", () => {
+        const today = getTodayKey();
+        let idx = DAY_KEYS.indexOf(today);
+        if (idx < 0) idx = 0;
+        setMobileDay(idx);
+      });
+    }
+  }
+
+  // реакция на изменение размера окна
+  window.addEventListener("resize", () => {
+    if (!isMobile()) {
+      document.querySelectorAll(".day-column").forEach(c => c.style.display = "flex");
     }
   });
 });
@@ -328,4 +352,5 @@ function showUpdate(reg){
 
 </body>
 </html>
+
 

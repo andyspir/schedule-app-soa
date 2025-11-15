@@ -349,9 +349,24 @@ function applyDesktopMode(){
     });
 
     const today = getTodayKey();
-    const ev = findCurrentEvent(today);
+    const isWeekend = !["mon","tue","wed","thu","fri"].includes(
+        ["sun","mon","tue","wed","thu","fri","sat"][new Date().getDay()]
+    );
+
+    let ev;
+
+    if (isWeekend) {
+        // В выходные — просто первый блок понедельника
+        const mondayEvents = document.querySelectorAll('.event[data-day="mon"]');
+        ev = mondayEvents.length > 0 ? mondayEvents[0] : null;
+    } else {
+        // В будни — подсвечиваем текущий блок
+        ev = findCurrentEvent(today);
+    }
+
     highlight(ev);
 }
+
 
 // --- Режим мобильный (один день на экране) ---
 function applyMobileMode(initial = false){
@@ -471,3 +486,4 @@ function showUpdateBanner(reg){
 
 </body>
 </html>
+

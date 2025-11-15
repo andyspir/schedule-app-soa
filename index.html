@@ -15,7 +15,7 @@
         z-index: 1000;
         background: #ffffff;
         padding: 10px 0 8px 0;
-        margin: 0 -8px 8px -8px; /* расширяем фон на всю ширину */
+        margin: 0 -8px 8px -8px;
         border-bottom: 1px solid #dcdcdc;
         box-shadow: 0 2px 6px rgba(0,0,0,0.08);
         text-align: center;
@@ -216,6 +216,34 @@ body {
     <!-- Деньки и события будут сгенерированы динамически из Google Sheets -->
 </div>
 
+<!-- Баннер обновления приложения -->
+<div id="updateBanner" style="
+    display:none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    font-size: 14px;
+    z-index: 3000;
+">
+    Доступна новая версия приложения.
+    <button id="updateBtn" style="
+        margin-left: 10px;
+        padding: 4px 10px;
+        font-size: 13px;
+        background: #ffae42;
+        color: #000;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    ">Обновить</button>
+</div>
+
 <script>
 // === Конфигурация ===
 const SHEET_JSON_URL =
@@ -240,7 +268,7 @@ function formatDurationStr(startStr, endStr) {
     const start = timeToMinutes(startStr);
     const end = timeToMinutes(endStr);
     let diff = end - start;
-    if (diff < 0) diff += 24 * 60; // на всякий случай для перехода через полночь
+    if (diff < 0) diff += 24 * 60; // на всякий случай
 
     const hours = Math.floor(diff / 60);
     const mins = diff % 60;
@@ -344,7 +372,7 @@ async function renderSchedule() {
     }
 }
 
-// === Логика подсветки и навигации (та, что у тебя была) ===
+// === Логика подсветки и навигации ===
 function getTodayKey() {
     const now = new Date();
     const weekday = now.getDay(); // 0=Sun,1=Mon,...,6=Sat
@@ -533,47 +561,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 </script>
 
 <script>
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./service-worker.js');
-}
-</script>
-<div id="updateBanner" style="
-    display:none;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffeeba;
-    padding: 12px 16px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    font-size: 14px;
-    z-index: 3000;
-">
-    Доступна новая версия приложения.
-    <button id="updateBtn" style="
-        margin-left: 10px;
-        padding: 4px 10px;
-        font-size: 13px;
-        background: #ffae42;
-        color: #000;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-    ">Обновить</button>
-</div>
-<script>
+// Регистрация Service Worker + показ баннера обновления
 if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./service-worker.js").then((reg) => {
 
-        // Если новая версия уже ждёт активации
         if (reg.waiting) {
             showUpdateBanner(reg);
             return;
         }
 
-        // Если новая версия загружена — показать баннер
         reg.addEventListener("updatefound", () => {
             const newWorker = reg.installing;
             newWorker.addEventListener("statechange", () => {
@@ -590,7 +586,9 @@ function showUpdateBanner(reg) {
     banner.style.display = "block";
 
     document.getElementById("updateBtn").onclick = () => {
-        reg.waiting.postMessage("SKIP_WAITING");
+        if (reg.waiting) {
+            reg.waiting.postMessage("SKIP_WAITING");
+        }
         window.location.reload(true);
     };
 }
@@ -598,4 +596,3 @@ function showUpdateBanner(reg) {
 
 </body>
 </html>
-

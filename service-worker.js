@@ -1,62 +1,52 @@
-const CACHE_NAME = "schedule-cache-v1";
-const URLS_TO_CACHE = [
+const CACHE_NAME = "schedule-soa-v1";
+
+const ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
+  "./service-worker.js",
+  "./icons/app_icon_192.png",
+  "./icons/app_icon_512.png"
 ];
 
-// Установка Service Worker
+// Установка SW
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(URLS_TO_CACHE);
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
   self.skipWaiting();
 });
 
 // Активация
 self.addEventListener("activate", (event) => {
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(keys.map((k) => k !== CACHE_NAME && caches.delete(k)))
+    )
+  );
+  self.clients.claim();
 });
 
-// Перехват запросов
+// Обработка запросов
 self.addEventListener("fetch", (event) => {
-  const url = event.request.url;
+  const url = new URL(event.request.url);
 
-  // ❗ Игнорируем служебные URL браузера и расширений
-  if (
-    url.startsWith("chrome-extension://") ||
-    url.startsWith("chrome://") ||
-    url.startsWith("devtools://")
-  ) {
-    return; // ничего не делаем
+  // НЕ кэшируем запросы к Google Sheets
+  if (url.hostname.includes("googleusercontent.com") ||
+      url.hostname.includes("docs.google.com")) {
+    return; // прямой fetch без SW
   }
 
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      return (
+    caches.match(event.request).then(
+      (cached) =>
         cached ||
-        fetch(event.request).then((response) => {
-          // Кэшируем ТОЛЬКО безопасные нормальные URL
-          if (
-            event.request.method === "GET" &&
-            response.status === 200 &&
-            response.type === "basic"
-          ) {
-            const responseClone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, responseClone);
-            });
-          }
-          return response;
-        })
-      );
-    })
+        fetch(event.request).catch(() => cached)
+    )
   );
 });
 
-// Получение команды SKIP_WAITING
+// Обновление
 self.addEventListener("message", (event) => {
   if (event.data === "SKIP_WAITING") {
     self.skipWaiting();

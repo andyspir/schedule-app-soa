@@ -400,16 +400,20 @@ function applyMobileMode(initial=false){
 
     clearHighlight();
 
-    let ev;
+let ev;
 
-    if (isTodayWeekend() && activeKey === 'mon') {
-        ev = getFirstEvent('mon');
-    } else {
-        ev = findCurrentEvent(activeKey);
-        if (!ev) ev = getFirstEvent(activeKey);
-    }
+if (isTodayWeekend()) {
+    // В выходные всегда подсвечиваем понедельник,
+    // даже если пользователь листает на другие дни
+    ev = getFirstEvent('mon');
+} else {
+    // Будни — подсветка текущего блока только в выбранном дне
+    ev = findCurrentEvent(activeKey);
+    if (!ev) ev = getFirstEvent(activeKey);
+}
 
-    highlight(ev);
+highlight(ev);
+
 }
 
 function setMobileDay(i){
@@ -482,3 +486,4 @@ function showUpdateBanner(reg){
 
 </body>
 </html>
+

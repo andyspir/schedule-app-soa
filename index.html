@@ -87,7 +87,7 @@ body {
     box-shadow: 0 0 10px 3px rgba(255, 180, 80, 0.85) !important;
 }
 
-/* Кнопка "сейчас" для планшетов/десктопа */
+/* Кнопка "сейчас" для планшетов */
 #tabletNowBtn {
     display: none;
     position: fixed;
@@ -102,7 +102,7 @@ body {
     box-shadow: 0 2px 6px rgba(0,0,0,0.25);
 }
 
-/* Мобильная боковая навигация */
+/* Мобильная навигация */
 .mobile-side-nav {
     display: none;
     position: fixed;
@@ -169,14 +169,20 @@ body {
 </div>
 
 <script>
-// ==== Конфигурация CSV ====
+/* ============================================================
+   CSV + ЛОГИКА ЗАГРУЗКИ
+============================================================ */
+
 const SHEET_CSV_URL =
  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTYBAcXFTIcphfEyjNyTszMEGJxuhTHoGZC-6nL7aLjokDPKGgLHRCWvLTBfK2Pu9wUohRstIk9Rxg7/pub?gid=0&single=true&output=csv";
 
-const DAY_KEYS   = ['mon','tue','wed','thu','fri'];
-const DAY_TITLES = { mon:'Понедельник', tue:'Вторник', wed:'Среда', thu:'Четверг', fri:'Пятница' };
+const DAY_KEYS = ['mon','tue','wed','thu','fri'];
+const DAY_TITLES = {
+    mon:'Понедельник', tue:'Вторник',
+    wed:'Среда', thu:'Четверг', fri:'Пятница'
+};
 
-// ==== CSV-парсер (учитывает кавычки и запятые внутри текста) ====
+/* Умный CSV парсер */
 function parseCSVLine(line) {
     const result = [];
     let cur = '';
@@ -184,23 +190,16 @@ function parseCSVLine(line) {
 
     for (let i = 0; i < line.length; i++) {
         const c = line[i];
-        if (c === '"' && line[i+1] === '"') {
-            cur += '"';
-            i++;
-        } else if (c === '"') {
-            inside = !inside;
-        } else if (c === ',' && !inside) {
-            result.push(cur);
-            cur = '';
-        } else {
-            cur += c;
-        }
+        if (c === '"' && line[i+1] === '"') { cur += '"'; i++; }
+        else if (c === '"') inside = !inside;
+        else if (c === ',' && !inside) { result.push(cur); cur=''; }
+        else cur += c;
     }
     result.push(cur);
     return result;
 }
 
-// ==== Время и длительность ====
+/* Время */
 function timeToMinutes(t){
     const [h,m] = t.split(':').map(Number);
     return h*60 + m;
@@ -208,7 +207,7 @@ function timeToMinutes(t){
 
 function formatDuration(start,end){
     let d = timeToMinutes(end) - timeToMinutes(start);
-    if (d < 0) d += 1440; // переход через полночь
+    if (d < 0) d += 1440;
     const h = Math.floor(d/60);
     const m = d % 60;
     const parts = [];
@@ -218,16 +217,15 @@ function formatDuration(start,end){
     return parts.join(' ');
 }
 
-// ==== Загрузка расписания из Google Sheets (CSV) ====
+/* Загрузка расписания */
 async function loadSchedule(){
     const resp = await fetch(SHEET_CSV_URL);
-    const csv  = await resp.text();
+    const csv = await resp.text();
     const lines = csv.trim().split('\n');
 
     const schedule = {mon:[],tue:[],wed:[],thu:[],fri:[]};
 
-    // пропускаем строку заголовков (i = 1)
-    for(let i = 1; i < lines.length; i++){
+    for (let i = 1; i < lines.length; i++) {
         const cols = parseCSVLine(lines[i]);
         if (cols.length < 5) continue;
 
@@ -243,7 +241,6 @@ async function loadSchedule(){
         schedule[day].push({ day, start, end, text, type });
     }
 
-    // сортировка и правило "последний блок до 06:30, если end пустой"
     for (const k of DAY_KEYS) {
         const arr = schedule[k];
         if (!arr.length) continue;
@@ -251,15 +248,16 @@ async function loadSchedule(){
         arr.sort((a,b) => timeToMinutes(a.start) - timeToMinutes(b.start));
 
         const last = arr[arr.length - 1];
-        if (!last.end || last.end.trim() === '') {
-            last.end = '06:30';
-        }
+        if (!last.end || last.end.trim() === '') last.end = '06:30';
     }
 
     return schedule;
 }
 
-// ==== Рендер расписания ====
+/* ============================================================
+   РЕНДЕР РАСПИСАНИЯ
+============================================================ */
+
 async function renderSchedule(){
     const data = await loadSchedule();
     const wrap = document.getElementById('weekContainer');
@@ -289,6 +287,9 @@ async function renderSchedule(){
               <div class="duration">${formatDuration(ev.start, ev.end)}</div>
             `;
 
+            /* 🔥 ФИКС — удаляем любые старые подсветки */
+            box.classList.remove("highlight");
+
             col.appendChild(box);
         });
 
@@ -296,14 +297,17 @@ async function renderSchedule(){
     }
 }
 
-// ==== Подсветка и режимы ====
+/* ============================================================
+   ПОДСВЕТКА + РЕЖИМЫ
+============================================================ */
+
 function getTodayKey(){
     const map = {1:'mon',2:'tue',3:'wed',4:'thu',5:'fri'};
-    return map[new Date().getDay()] || 'mon';   // выходные -> понедельник
+    return map[new Date().getDay()] || 'mon';
 }
 
 function isTodayWeekend(){
-    const d = new Date().getDay(); // 0=Вс, 6=Сб
+    const d = new Date().getDay(); // 0=ВС,6=СБ
     return d === 0 || d === 6;
 }
 
@@ -344,10 +348,10 @@ function isMobile(){
     return window.innerWidth < 600;
 }
 
-let currentMode = null;          // 'desktop' | 'mobile'
+let currentMode = null;
 let activeMobileDayIndex = 0;
 
-// --- ДЕСКТОП / ПЛАНШЕТ ---
+/* === ДЕСКТОП === */
 function applyDesktopMode(){
     currentMode = 'desktop';
 
@@ -359,19 +363,20 @@ function applyDesktopMode(){
     clearHighlight();
 
     let ev = null;
+
     if (isTodayWeekend()) {
-        // выходные → первый блок понедельника
         ev = getFirstEvent('mon');
     } else {
         const todayKey = getTodayKey();
         ev = findCurrentEvent(todayKey);
+        if (!ev) ev = getFirstEvent(todayKey);
     }
 
-    if (ev) highlight(ev);
+    highlight(ev);
 }
 
-// --- МОБИЛЬНЫЙ (один день на экране) ---
-function applyMobileMode(initial = false){
+/* === МОБИЛЬНЫЙ РЕЖИМ === */
+function applyMobileMode(initial=false){
     currentMode = 'mobile';
 
     if (initial) {
@@ -382,7 +387,7 @@ function applyMobileMode(initial = false){
 
     const activeKey = DAY_KEYS[activeMobileDayIndex];
 
-    // === показываем только активный день ===
+    /* показываем только активный день */
     document.querySelectorAll('.day-column').forEach(col => {
         if (col.id === activeKey) {
             col.style.display = 'flex';
@@ -393,92 +398,64 @@ function applyMobileMode(initial = false){
         }
     });
 
-    // === очищаем ВСЕ подсветки у всех дней ===
     clearHighlight();
 
-    // === определяем что подсвечивать ТОЛЬКО в активном дне ===
     let ev;
 
     if (isTodayWeekend() && activeKey === 'mon') {
-        // На выходных → всегда первый блок ПН
         ev = getFirstEvent('mon');
     } else {
         ev = findCurrentEvent(activeKey);
         if (!ev) ev = getFirstEvent(activeKey);
     }
 
-    // === подсвечиваем только один блок ===
-    if (ev) highlight(ev);
+    highlight(ev);
 }
 
-
-// переключение дня в мобильном режиме
-function setMobileDay(index){
-    activeMobileDayIndex = (index + DAY_KEYS.length) % DAY_KEYS.length;
-    if (currentMode === 'mobile') {
-        applyMobileMode(false);
-    }
+function setMobileDay(i){
+    activeMobileDayIndex = (i + DAY_KEYS.length) % DAY_KEYS.length;
+    if (currentMode === 'mobile') applyMobileMode(false);
 }
 
-// обновление режима при загрузке и resize
-function updateLayout(initial = false){
+function updateLayout(initial=false){
     if (isMobile()) {
-        if (initial || currentMode !== 'mobile') {
-            applyMobileMode(true);
-        } else {
-            applyMobileMode(false);
-        }
+        if (initial || currentMode !== 'mobile') applyMobileMode(true);
+        else applyMobileMode(false);
     } else {
-        if (initial || currentMode !== 'desktop') {
-            applyDesktopMode();
-        }
+        if (initial || currentMode !== 'desktop') applyDesktopMode();
     }
 }
 
-// ==== Инициализация ====
+/* ============================================================
+   ИНИЦИАЛИЗАЦИЯ
+============================================================ */
+
 document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        await renderSchedule();
-        updateLayout(true);
+    await renderSchedule();
+    updateLayout(true);
 
-        // мобильная боковая навигация
-        const sideNav = document.getElementById('mobileSideNav');
-        if (sideNav) {
-            sideNav.querySelectorAll('button[data-day-index]')
-                .forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const idx = parseInt(btn.dataset.dayIndex, 10);
-                        setMobileDay(idx);
-                    });
-                });
-
-            const mobileNowBtn = document.getElementById('mobileNowBtn');
-            if (mobileNowBtn) {
-                mobileNowBtn.addEventListener('click', () => {
-                    const todayKey = getTodayKey();
-                    const idx = DAY_KEYS.indexOf(todayKey);
-                    setMobileDay(idx >= 0 ? idx : 0);
-                });
-            }
-        }
-
-        // кнопка ▶️ на планшете/десктопе – перейти к текущему блоку
-        const tabletBtn = document.getElementById('tabletNowBtn');
-        if (tabletBtn) {
-            tabletBtn.addEventListener('click', () => {
-                applyDesktopMode();
+    document.querySelectorAll('#mobileSideNav button[data-day-index]')
+        .forEach(btn => {
+            btn.addEventListener('click', () => {
+                setMobileDay(parseInt(btn.dataset.dayIndex));
             });
-        }
-
-        window.addEventListener('resize', () => {
-            updateLayout(false);
         });
-    } catch (e) {
-        console.error('Ошибка при загрузке расписания из Google Sheets', e);
-    }
+
+    document.getElementById('mobileNowBtn').onclick = () => {
+        setMobileDay(DAY_KEYS.indexOf(getTodayKey()));
+    };
+
+    document.getElementById('tabletNowBtn').onclick = () => {
+        applyDesktopMode();
+    };
+
+    window.addEventListener('resize', () => updateLayout(false));
 });
 
-// ==== PWA и обновления ====
+/* ============================================================
+   PWA
+============================================================ */
+
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('service-worker.js').then(reg => {
         if (reg.waiting) showUpdateBanner(reg);
@@ -505,4 +482,3 @@ function showUpdateBanner(reg){
 
 </body>
 </html>
-

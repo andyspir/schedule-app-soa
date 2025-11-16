@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Адаптивное расписание недели</title>
 <link rel="icon" href="favicon.ico">
-
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#ffffff">
 
@@ -21,13 +20,12 @@
         padding: 10px 0 8px 0;
         margin: 0 -8px 8px -8px;
         border-bottom: 1px solid #dcdcdc;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
         text-align: center;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
     }
 }
 
 html { scroll-behavior: smooth; }
-
 body {
     font-family: Arial, sans-serif;
     background: #fafafa;
@@ -47,7 +45,6 @@ body {
     border-radius: 10px;
     background: #ffffff;
     padding: 10px 8px 12px 8px;
-    box-sizing: border-box;
     display: flex;
     flex-direction: column;
 }
@@ -66,12 +63,11 @@ body {
     border-radius: 8px;
     margin-bottom: 4px;
     border: 1px solid #ccc;
-    box-sizing: border-box;
     font-size: 12px;
 }
 
 .time { font-size: 11px; font-weight: bold; }
-.text { font-size: 11px; white-space: normal; }
+.text { font-size: 11px; }
 .duration { text-align: right; font-size: 11px; font-weight: bold; }
 
 .school     { background: #cce6ff; }
@@ -87,31 +83,29 @@ body {
     box-shadow: 0 0 10px 3px rgba(255, 180, 80, 0.85) !important;
 }
 
-/* Кнопка "сейчас" для планшетов */
 #tabletNowBtn {
     display: none;
     position: fixed;
     right: 12px;
     top: 12px;
-    z-index: 1100;
     border: 1px solid #ccc;
     border-radius: 18px;
     padding: 6px 14px;
     font-size: 18px;
     background: #ffffff;
+    z-index: 1100;
     box-shadow: 0 2px 6px rgba(0,0,0,0.25);
 }
 
-/* Мобильная навигация */
 .mobile-side-nav {
     display: none;
     position: fixed;
     right: 4px;
     top: 50%;
     transform: translateY(-50%);
-    z-index: 1200;
     flex-direction: column;
     gap: 4px;
+    z-index: 1200;
 }
 
 .mobile-side-nav button {
@@ -120,23 +114,18 @@ body {
     padding: 4px 6px;
     font-size: 11px;
     background: #ffffff;
-    min-width: 32px;
-    text-align: center;
 }
 
-/* Адаптивность по ширине */
+/* Адаптивность */
 @media (max-width: 1199px) {
     .week-container { grid-template-columns: repeat(3, 1fr); }
 }
-
 @media (min-width: 600px) and (max-width: 1199px) {
     #tabletNowBtn { display: block; }
 }
-
 @media (max-width: 899px) {
     .week-container { grid-template-columns: repeat(2, 1fr); }
 }
-
 @media (max-width: 599px) {
     body { margin: 10px; }
     .week-container { grid-template-columns: 1fr; }
@@ -146,8 +135,8 @@ body {
     #tabletNowBtn { display: none !important; }
 }
 </style>
-
 </head>
+
 <body>
 
 <button id="tabletNowBtn">▶️</button>
@@ -163,16 +152,16 @@ body {
 
 <div class="week-container" id="weekContainer"></div>
 
-<div id="updateBanner" style="display:none; position:fixed; left:0; right:0; bottom:0; background:#ffebcc; padding:10px; text-align:center;">
-    Доступна новая версия приложения.
-    <button id="updateBtn" style="padding:4px 10px; background:#ffae42; border:none;">Обновить</button>
-</div>
-
 <script>
 /* ============================================================
-   CSV + ЛОГИКА ЗАГРУЗКИ
+   ГЛОБАЛЬНЫЕ ДАННЫЕ (ускорение)
 ============================================================ */
+let SCHEDULE = null;
+let EVENT_MAP = {};
 
+/* ============================================================
+   КОНСТАНТЫ
+============================================================ */
 const SHEET_CSV_URL =
  "https://docs.google.com/spreadsheets/d/e/2PACX-1vTYBAcXFTIcphfEyjNyTszMEGJxuhTHoGZC-6nL7aLjokDPKGgLHRCWvLTBfK2Pu9wUohRstIk9Rxg7/pub?gid=0&single=true&output=csv";
 
@@ -182,9 +171,11 @@ const DAY_TITLES = {
     wed:'Среда', thu:'Четверг', fri:'Пятница'
 };
 
-/* Умный CSV парсер */
+/* ============================================================
+   CSV ПАРСЕР
+============================================================ */
 function parseCSVLine(line) {
-    const result = [];
+    const res = [];
     let cur = '';
     let inside = false;
 
@@ -192,14 +183,16 @@ function parseCSVLine(line) {
         const c = line[i];
         if (c === '"' && line[i+1] === '"') { cur += '"'; i++; }
         else if (c === '"') inside = !inside;
-        else if (c === ',' && !inside) { result.push(cur); cur=''; }
+        else if (c === ',' && !inside) { res.push(cur); cur=''; }
         else cur += c;
     }
-    result.push(cur);
-    return result;
+    res.push(cur);
+    return res;
 }
 
-/* Время */
+/* ============================================================
+   ВРЕМЯ + ДЛИТЕЛЬНОСТЬ
+============================================================ */
 function timeToMinutes(t){
     const [h,m] = t.split(':').map(Number);
     return h*60 + m;
@@ -210,281 +203,238 @@ function formatDuration(start,end){
     if (d < 0) d += 1440;
     const h = Math.floor(d/60);
     const m = d % 60;
-    const parts = [];
-    if (h > 0) parts.push(h + ' ч');
-    if (m > 0) parts.push(m + ' мин');
-    if (!parts.length) parts.push('0 мин');
-    return parts.join(' ');
+    if (h === 0 && m === 0) return "0 мин";
+    return (h ? h + " ч " : "") + (m ? m + " мин" : "");
 }
 
-/* Загрузка расписания */
+/* ============================================================
+   ЗАГРУЗКА РАСПИСАНИЯ (1 раз)
+============================================================ */
 async function loadSchedule(){
-    const resp = await fetch(SHEET_CSV_URL);
-    const csv = await resp.text();
-    const lines = csv.trim().split('\n');
+    const text = await fetch(SHEET_CSV_URL).then(r=>r.text());
+    const lines = text.trim().split("\n");
 
-    const schedule = {mon:[],tue:[],wed:[],thu:[],fri:[]};
+    const data = {mon:[],tue:[],wed:[],thu:[],fri:[]};
 
     for (let i = 1; i < lines.length; i++) {
         const cols = parseCSVLine(lines[i]);
         if (cols.length < 5) continue;
 
-        const day   = (cols[0] || '').trim();
-        const start = (cols[1] || '').trim();
-        let   end   = (cols[2] || '').trim();
-        const text  = (cols[3] || '').trim();
-        const type  = (cols[4] || '').trim() || 'default';
+        const day   = cols[0].trim();
+        const start = cols[1].trim();
+        let   end   = cols[2].trim();
+        const text  = cols[3].trim();
+        const type  = cols[4].trim() || "default";
 
         if (!day || !start || !text) continue;
-        if (!schedule[day]) continue;
+        if (!data[day]) continue;
 
-        schedule[day].push({ day, start, end, text, type });
+        data[day].push({ day, start, end, text, type });
     }
 
     for (const k of DAY_KEYS) {
-        const arr = schedule[k];
-        if (!arr.length) continue;
+        const arr = data[k];
+        arr.sort((a,b)=> timeToMinutes(a.start) - timeToMinutes(b.start));
 
-        arr.sort((a,b) => timeToMinutes(a.start) - timeToMinutes(b.start));
-
-        const last = arr[arr.length - 1];
-        if (!last.end || last.end.trim() === '') last.end = '06:30';
+        if (arr.length) {
+            const last = arr[arr.length - 1];
+            if (!last.end) last.end = "06:30";
+        }
     }
 
-    return schedule;
+    return data;
 }
 
 /* ============================================================
-   РЕНДЕР РАСПИСАНИЯ
+   РЕНДЕР DOM (по глобальному SCHEDULE)
 ============================================================ */
+function renderSchedule(){
+    const wrap = document.getElementById("weekContainer");
+    wrap.innerHTML = "";
 
-async function renderSchedule(){
-    const data = await loadSchedule();
-    const wrap = document.getElementById('weekContainer');
-    wrap.innerHTML = '';
+    EVENT_MAP = {};
 
-    for (const day of DAY_KEYS) {
-        const col = document.createElement('div');
-        col.className = 'day-column';
-        col.id = day;
+    for (const key of DAY_KEYS) {
+        const col = document.createElement("div");
+        col.className = "day-column";
+        col.id = key;
 
-        const title = document.createElement('div');
-        title.className = 'day-title';
-        title.textContent = DAY_TITLES[day];
+        const title = document.createElement("div");
+        title.className = "day-title";
+        title.textContent = DAY_TITLES[key];
         col.appendChild(title);
 
-        (data[day] || []).forEach(ev => {
-            const box = document.createElement('div');
-            box.className = 'event ' + ev.type;
+        EVENT_MAP[key] = [];
 
-            box.dataset.day   = ev.day;
+        for (const ev of SCHEDULE[key]) {
+            const box = document.createElement("div");
+            box.className = "event " + ev.type;
             box.dataset.start = ev.start;
-            box.dataset.end   = ev.end;
+            box.dataset.end = ev.end;
 
             box.innerHTML = `
-              <div class="time">${ev.start}</div>
-              <div class="text">${ev.text}</div>
-              <div class="duration">${formatDuration(ev.start, ev.end)}</div>
+                <div class="time">${ev.start}</div>
+                <div class="text">${ev.text}</div>
+                <div class="duration">${formatDuration(ev.start, ev.end)}</div>
             `;
 
-            /* 🔥 ФИКС — удаляем любые старые подсветки */
-            box.classList.remove("highlight");
-
+            EVENT_MAP[key].push(box);
             col.appendChild(box);
-        });
+        }
 
         wrap.appendChild(col);
     }
 }
 
 /* ============================================================
-   ПОДСВЕТКА + РЕЖИМЫ
+   ПОДСВЕТКА
 ============================================================ */
+function clearHighlight(){
+    document.querySelectorAll(".highlight").forEach(el=>el.classList.remove("highlight"));
+}
+
+function highlightEvent(ev, scroll = true){
+    clearHighlight();
+    if (!ev) return;
+    ev.classList.add("highlight");
+    if (scroll) ev.scrollIntoView({behavior:"smooth", block:"center"});
+}
 
 function getTodayKey(){
     const map = {1:'mon',2:'tue',3:'wed',4:'thu',5:'fri'};
-    return map[new Date().getDay()] || 'mon';
+    return map[new Date().getDay()] || "mon";
 }
 
-function isTodayWeekend(){
-    const d = new Date().getDay(); // 0=ВС,6=СБ
+function isWeekend(){
+    const d = new Date().getDay();
     return d === 0 || d === 6;
 }
 
 function findCurrentEvent(day){
+    const arr = EVENT_MAP[day];
+    if (!arr || !arr.length) return null;
+
     const now = new Date();
     const m = now.getHours()*60 + now.getMinutes();
-    const list = [...document.querySelectorAll(`.event[data-day="${day}"]`)];
-    if (!list.length) return null;
 
-    let best = list[0];
-    for (const ev of list) {
-        const s = timeToMinutes(ev.dataset.start);
-        const e = timeToMinutes(ev.dataset.end);
-        if (m >= s && m < e) return ev;
-        if (m >= s) best = ev;
+    let best = arr[0];
+    for (const el of arr) {
+        const s = timeToMinutes(el.dataset.start);
+        const e = timeToMinutes(el.dataset.end);
+        if (m >= s && m < e) return el;
+        if (m >= s) best = el;
     }
     return best;
 }
 
 function getFirstEvent(day){
-    return document.querySelector(`.event[data-day="${day}"]`);
+    return EVENT_MAP[day]?.[0] || null;
 }
 
-function clearHighlight(){
-    document.querySelectorAll('.event.highlight')
-        .forEach(el => el.classList.remove('highlight'));
-}
-
-function highlight(ev){
-    clearHighlight();
-    if (ev) {
-        ev.classList.add('highlight');
-        ev.scrollIntoView({ behavior:'smooth', block:'center' });
-    }
-}
+/* ============================================================
+   РЕЖИМЫ
+============================================================ */
+let currentMode = null;
+let activeMobileDay = 0;
 
 function isMobile(){
     return window.innerWidth < 600;
 }
 
-let currentMode = null;
-let activeMobileDayIndex = 0;
-
-/* === ДЕСКТОП === */
 function applyDesktopMode(){
-    currentMode = 'desktop';
+    currentMode = "desktop";
 
-    document.querySelectorAll('.day-column').forEach(col => {
-        col.style.display = 'flex';
-        col.classList.remove('active-day');
+    document.querySelectorAll(".day-column").forEach(col=>{
+        col.style.display = "flex";
+        col.classList.remove("active-day");
     });
 
-    clearHighlight();
-
     let ev = null;
-
-    if (isTodayWeekend()) {
-        ev = getFirstEvent('mon');
+    if (isWeekend()) {
+        ev = getFirstEvent("mon");
     } else {
-        const todayKey = getTodayKey();
-        ev = findCurrentEvent(todayKey);
-        if (!ev) ev = getFirstEvent(todayKey);
+        const today = getTodayKey();
+        ev = findCurrentEvent(today) || getFirstEvent(today);
     }
 
-    highlight(ev);
+    highlightEvent(ev);
 }
 
-/* === МОБИЛЬНЫЙ РЕЖИМ === */
 function applyMobileMode(initial=false){
-    currentMode = 'mobile';
+    currentMode = "mobile";
 
     if (initial) {
-        const todayKey = getTodayKey();
-        const idx = DAY_KEYS.indexOf(todayKey);
-        activeMobileDayIndex = idx >= 0 ? idx : 0;
+        const idx = DAY_KEYS.indexOf(getTodayKey());
+        activeMobileDay = idx >= 0 ? idx : 0;
     }
 
-    const activeKey = DAY_KEYS[activeMobileDayIndex];
+    const key = DAY_KEYS[activeMobileDay];
 
-    /* показываем только активный день */
-    document.querySelectorAll('.day-column').forEach(col => {
-        if (col.id === activeKey) {
-            col.style.display = 'flex';
-            col.classList.add('active-day');
+    document.querySelectorAll(".day-column").forEach(col=>{
+        if (col.id === key) {
+            col.style.display = "flex";
+            col.classList.add("active-day");
         } else {
-            col.style.display = 'none';
-            col.classList.remove('active-day');
+            col.style.display = "none";
+            col.classList.remove("active-day");
         }
     });
 
-    clearHighlight();
+    let ev = null;
+    if (isWeekend()) {
+        ev = getFirstEvent("mon");
+    } else {
+        ev = findCurrentEvent(key) || getFirstEvent(key);
+    }
 
-let ev;
-
-if (isTodayWeekend()) {
-    // В выходные всегда подсвечиваем понедельник,
-    // даже если пользователь листает на другие дни
-    ev = getFirstEvent('mon');
-} else {
-    // Будни — подсветка текущего блока только в выбранном дне
-    ev = findCurrentEvent(activeKey);
-    if (!ev) ev = getFirstEvent(activeKey);
-}
-
-highlight(ev);
-
-}
-
-function setMobileDay(i){
-    activeMobileDayIndex = (i + DAY_KEYS.length) % DAY_KEYS.length;
-    if (currentMode === 'mobile') applyMobileMode(false);
+    highlightEvent(ev);
 }
 
 function updateLayout(initial=false){
     if (isMobile()) {
-        if (initial || currentMode !== 'mobile') applyMobileMode(true);
+        if (initial || currentMode !== "mobile") applyMobileMode(true);
         else applyMobileMode(false);
     } else {
-        if (initial || currentMode !== 'desktop') applyDesktopMode();
+        if (initial || currentMode !== "desktop") applyDesktopMode();
     }
 }
 
 /* ============================================================
-   ИНИЦИАЛИЗАЦИЯ
+   RESIZE DEBOUNCE
 ============================================================ */
-
-document.addEventListener('DOMContentLoaded', async () => {
-    await renderSchedule();
-    updateLayout(true);
-
-    document.querySelectorAll('#mobileSideNav button[data-day-index]')
-        .forEach(btn => {
-            btn.addEventListener('click', () => {
-                setMobileDay(parseInt(btn.dataset.dayIndex));
-            });
-        });
-
-    document.getElementById('mobileNowBtn').onclick = () => {
-        setMobileDay(DAY_KEYS.indexOf(getTodayKey()));
-    };
-
-    document.getElementById('tabletNowBtn').onclick = () => {
-        applyDesktopMode();
-    };
-
-    window.addEventListener('resize', () => updateLayout(false));
+let resizeTimer = null;
+window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(()=>updateLayout(false), 150);
 });
 
 /* ============================================================
-   PWA
+   ИНИЦИАЛИЗАЦИЯ
 ============================================================ */
+document.addEventListener("DOMContentLoaded", async () => {
+    SCHEDULE = await loadSchedule();   // загрузка 1 раз
+    renderSchedule();                  // генерируем DOM
+    updateLayout(true);                // применяем режим
 
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js').then(reg => {
-        if (reg.waiting) showUpdateBanner(reg);
-        reg.addEventListener('updatefound', () => {
-            const nw = reg.installing;
-            nw.addEventListener('statechange', () => {
-                if (nw.state === 'installed' && navigator.serviceWorker.controller) {
-                    showUpdateBanner(reg);
-                }
+    document.querySelectorAll('#mobileSideNav button[data-day-index]')
+        .forEach(btn => {
+            btn.addEventListener("click", () => {
+                activeMobileDay = parseInt(btn.dataset.dayIndex);
+                applyMobileMode(false);
             });
         });
-    });
-}
 
-function showUpdateBanner(reg){
-    const banner = document.getElementById('updateBanner');
-    banner.style.display = 'block';
-    document.getElementById('updateBtn').onclick = () => {
-        if (reg.waiting) reg.waiting.postMessage('SKIP_WAITING');
-        location.reload();
+    document.getElementById("mobileNowBtn").onclick = () => {
+        const idx = DAY_KEYS.indexOf(getTodayKey());
+        activeMobileDay = idx >= 0 ? idx : 0;
+        applyMobileMode(false);
     };
-}
+
+    document.getElementById("tabletNowBtn").onclick = () => {
+        applyDesktopMode();
+    };
+});
 </script>
 
 </body>
 </html>
-
-
